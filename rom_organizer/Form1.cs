@@ -353,12 +353,15 @@ namespace rom_organizer
                         };
 
                         // Perform the enhanced scan with XML metadata
+                        // Suppress obsolete warning: ScanDirectory is used intentionally for memory mode
+#pragma warning disable CS0618
                         var results = RomScanner.ScanDirectory(
                             directoryTextBox.Text,
                             recursive: recursiveCheckBox.Checked,
                             extractMetadata: metadataCheckBox.Checked,
                             progressCallback: progressCallback
                         );
+#pragma warning restore CS0618
 
                         return results;
                     }
