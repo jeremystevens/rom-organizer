@@ -40,20 +40,7 @@ namespace rom_organizer
             recursiveCheckBox.Checked = settings.RecursiveScanning;
             metadataCheckBox.Checked = settings.ExtractMetadata;
 
-            // Restore window settings
-            var windowSettings = settings.WindowSettings;
-            if (windowSettings.X > 0 && windowSettings.Y > 0)
-            {
-                this.StartPosition = FormStartPosition.Manual;
-                this.Location = new Point(windowSettings.X, windowSettings.Y);
-            }
-
-            this.Size = new Size(windowSettings.Width, windowSettings.Height);
-
-            if (windowSettings.IsMaximized)
-            {
-                this.WindowState = FormWindowState.Maximized;
-            }
+            // NOTE: Removed window settings management to preserve original form size
         }
 
         private void SaveUserSettings()
@@ -68,28 +55,7 @@ namespace rom_organizer
             settings.RecursiveScanning = recursiveCheckBox.Checked;
             settings.ExtractMetadata = metadataCheckBox.Checked;
 
-            // Save window settings
-            var windowSettings = new WindowSettings();
-
-            if (this.WindowState == FormWindowState.Normal)
-            {
-                windowSettings.Width = this.Width;
-                windowSettings.Height = this.Height;
-                windowSettings.X = this.Location.X;
-                windowSettings.Y = this.Location.Y;
-                windowSettings.IsMaximized = false;
-            }
-            else if (this.WindowState == FormWindowState.Maximized)
-            {
-                windowSettings.IsMaximized = true;
-                // Keep the restored bounds for when window is restored
-                windowSettings.Width = this.RestoreBounds.Width;
-                windowSettings.Height = this.RestoreBounds.Height;
-                windowSettings.X = this.RestoreBounds.X;
-                windowSettings.Y = this.RestoreBounds.Y;
-            }
-
-            settings.WindowSettings = windowSettings;
+            // NOTE: Removed window settings saving to preserve original form size
         }
 
         private void InitializeUI()
