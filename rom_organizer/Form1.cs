@@ -13,15 +13,105 @@ namespace rom_organizer
     {
         private Timer scanTimer;
         private bool isScanning = false;
+        private SettingsManager settings;
 
         public Form1()
         {
             InitializeComponent();
+            settings = SettingsManager.Instance;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             // Custom console is already initialized with proper styling
+            LoadUserSettings();
+            InitializeUI();
+        }
+
+        private void LoadUserSettings()
+        {
+            // Restore directory selection
+            if (settings.IsDirectoryValid())
+            {
+                directoryTextBox.Text = settings.LastSelectedDirectory;
+            }
+
+            // Restore scan preferences
+            recursiveCheckBox.Checked = settings.RecursiveScanning;
+            metadataCheckBox.Checked = settings.ExtractMetadata;
+
+            // Restore window settings
+            var windowSettings = settings.WindowSettings;
+            if (windowSettings.X > 0 && windowSettings.Y > 0)
+            {
+                this.StartPosition = FormStartPosition.Manual;
+                this.Location = new Point(windowSettings.X, windowSettings.Y);
+            }
+
+            this.Size = new Size(windowSettings.Width, windowSettings.Height);
+
+            if (windowSettings.IsMaximized)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+        }
+
+        private void SaveUserSettings()
+        {
+            // Save current directory
+            if (!string.IsNullOrEmpty(directoryTextBox.Text) && directoryTextBox.Text != "Choose a folder...")
+            {
+                settings.LastSelectedDirectory = directoryTextBox.Text;
+            }
+
+            // Save scan preferences
+            settings.RecursiveScanning = recursiveCheckBox.Checked;
+            settings.ExtractMetadata = metadataCheckBox.Checked;
+
+            // Save window settings
+            var windowSettings = new WindowSettings();
+
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                windowSettings.Width = this.Width;
+                windowSettings.Height = this.Height;
+                windowSettings.X = this.Location.X;
+                windowSettings.Y = this.Location.Y;
+                windowSettings.IsMaximized = false;
+            }
+            else if (this.WindowState == FormWindowState.Maximized)
+            {
+                windowSettings.IsMaximized = true;
+                // Keep the restored bounds for when window is restored
+                windowSettings.Width = this.RestoreBounds.Width;
+                windowSettings.Height = this.RestoreBounds.Height;
+                windowSettings.X = this.RestoreBounds.X;
+                windowSettings.Y = this.RestoreBounds.Y;
+            }
+
+            settings.WindowSettings = windowSettings;
+        }
+
+        private void InitializeUI()
+        {
+            // Initialize console with welcome message
+            consoleOutput.ClearText();
+            consoleOutput.AddText("🖥️ ROM Scanner Console v2.0", Color.FromArgb(100, 200, 255));
+            consoleOutput.AddText("", Color.White);
+            AppendConsoleText("[SYSTEM] ROM Scanner initialized and ready", Color.LimeGreen);
+
+            // Show loaded directory if available
+            if (settings.IsDirectoryValid())
+            {
+                AppendConsoleText($"[SETTINGS] Loaded directory: {settings.LastSelectedDirectory}", Color.FromArgb(100, 200, 255));
+                AppendConsoleText("[INFO] Click 'Start Scan' to scan the loaded directory", Color.FromArgb(150, 150, 150));
+            }
+            else
+            {
+                AppendConsoleText("[INFO] Select a directory and click 'Start Scan' to begin", Color.FromArgb(150, 150, 150));
+            }
+
+            AppendConsoleText("", Color.White);
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -31,10 +121,17 @@ namespace rom_organizer
                 dialog.Description = "Select ROM Directory";
                 dialog.ShowNewFolderButton = true;
 
+                // Start from the last selected directory if available
+                if (settings.IsDirectoryValid())
+                {
+                    dialog.SelectedPath = settings.LastSelectedDirectory;
+                }
+
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     directoryTextBox.Text = dialog.SelectedPath;
-                    AppendConsoleText($"[INFO] Directory selected: {dialog.SelectedPath}", Color.FromArgb(100, 200, 255));
+                    settings.LastSelectedDirectory = dialog.SelectedPath; // Save immediately
+                    AppendConsoleText($"[INFO] Directory selected and saved: {dialog.SelectedPath}", Color.FromArgb(100, 200, 255));
                 }
             }
         }
@@ -59,11 +156,191 @@ namespace rom_organizer
                 return;
             }
 
-            // Start real ROM scanning
-            await StartRealScan();
+            // Choose scanning method based on user preference
+            if (settings.UseDatabaseStorage)
+            {
+                await StartDatabaseScan();
+            }
+            else
+            {
+                await StartMemoryScan();
+            }
         }
 
-        private async Task StartRealScan()
+        private async Task StartDatabaseScan()
+        {
+            isScanning = true;
+
+            // Update UI
+            scanProgress.Visible = true;
+            scanProgress.Value = 0;
+            startScanButton.Text = "Scanning to Database...";
+            startScanButton.Enabled = false;
+            browseButton.Enabled = false;
+
+            // Clear console and show scan start
+            consoleOutput.ClearText();
+            consoleOutput.AddText("🖥️ ROM Scanner Console - Database Mode", Color.FromArgb(100, 200, 255));
+            consoleOutput.AddText("", Color.White);
+
+            AppendConsoleText("[SCAN] Starting enhanced ROM scan with database storage...", Color.Yellow);
+            AppendConsoleText($"[SCAN] Directory: {directoryTextBox.Text}", Color.FromArgb(100, 200, 255));
+            AppendConsoleText($"[SCAN] Recursive: {recursiveCheckBox.Checked}", Color.FromArgb(100, 200, 255));
+            AppendConsoleText($"[SCAN] Extract Metadata: {metadataCheckBox.Checked}", Color.FromArgb(100, 200, 255));
+            AppendConsoleText("", Color.White);
+
+            try
+            {
+                // Start progress animation
+                StartProgressAnimation();
+
+                // Run the enhanced ROM scanner with database storage
+                var scanResult = await Task.Run(() => {
+                    try
+                    {
+                        // Progress callback to update UI
+                        RomScanner.ProgressCallback progressCallback = (message, filesProcessed) => {
+                            AppendConsoleText($"[SCAN] {message}", Color.Cyan);
+                        };
+
+                        // Perform the enhanced scan with database storage
+                        var result = RomScanner.ScanDirectoryToDatabase(
+                            directoryTextBox.Text,
+                            recursive: recursiveCheckBox.Checked,
+                            extractMetadata: metadataCheckBox.Checked,
+                            progressCallback: progressCallback
+                        );
+
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle any scanning errors
+                        AppendConsoleText($"[ERROR] Scan failed: {ex.Message}", Color.Red);
+                        return null;
+                    }
+                });
+
+                // Stop progress animation
+                StopProgressAnimation();
+
+                if (scanResult != null)
+                {
+                    // Display scan results
+                    AppendConsoleText("", Color.White);
+                    AppendConsoleText($"[SUCCESS] Scan completed in {scanResult.Duration.TotalSeconds:F1} seconds", Color.LimeGreen);
+                    AppendConsoleText("", Color.White);
+
+                    // Show database statistics
+                    AppendConsoleText("[DATABASE] Scan results:", Color.Yellow);
+                    AppendConsoleText($"[DATABASE] Files found: {scanResult.FilesFound}", Color.FromArgb(100, 200, 255));
+                    AppendConsoleText($"[DATABASE] Files added: {scanResult.FilesAdded}", Color.LimeGreen);
+                    AppendConsoleText($"[DATABASE] Files updated: {scanResult.FilesUpdated}", Color.Orange);
+
+                    if (scanResult.FilesRemoved > 0)
+                    {
+                        AppendConsoleText($"[DATABASE] Files removed: {scanResult.FilesRemoved}", Color.Red);
+                    }
+
+                    AppendConsoleText("", Color.White);
+
+                    // Get and display collection statistics from database
+                    try
+                    {
+                        var database = new RomDatabase();
+                        var consoleStats = database.GetConsoleStats();
+                        var genreStats = database.GetGenreStats();
+
+                        AppendConsoleText("[COLLECTION] Console breakdown:", Color.FromArgb(255, 165, 0));
+                        foreach (var consoleStat in consoleStats.Take(8)) // Show top 8 consoles
+                        {
+                            AppendConsoleText($"  ✓ {consoleStat.Key}: {consoleStat.Value} games", Color.LimeGreen);
+                        }
+
+                        if (consoleStats.Count > 8)
+                        {
+                            var remaining = consoleStats.Skip(8).Sum(x => x.Value);
+                            AppendConsoleText($"  ... and {remaining} games in {consoleStats.Count - 8} other systems", Color.FromArgb(150, 150, 150));
+                        }
+
+                        AppendConsoleText("", Color.White);
+
+                        if (metadataCheckBox.Checked && genreStats.Count > 0)
+                        {
+                            AppendConsoleText("[METADATA] Top genres:", Color.Magenta);
+                            foreach (var genreStat in genreStats.Take(5)) // Show top 5 genres
+                            {
+                                AppendConsoleText($"  ✓ {genreStat.Key}: {genreStat.Value} games", Color.Magenta);
+                            }
+
+                            if (genreStats.Count > 5)
+                            {
+                                AppendConsoleText($"  ... and {genreStats.Count - 5} other genres", Color.FromArgb(150, 150, 150));
+                            }
+
+                            AppendConsoleText("", Color.White);
+                        }
+
+                        // Final summary
+                        int totalRoms = consoleStats.Values.Sum();
+                        AppendConsoleText("═══════════════════════════════════════", Color.Cyan);
+                        AppendConsoleText("[SUMMARY] Collection overview:", Color.Yellow);
+                        AppendConsoleText($"[SUMMARY] Total ROMs in database: {totalRoms:N0}", Color.Yellow);
+                        AppendConsoleText($"[SUMMARY] Console systems: {consoleStats.Count}", Color.Yellow);
+
+                        if (genreStats.Count > 0)
+                        {
+                            AppendConsoleText($"[SUMMARY] Unique genres: {genreStats.Count}", Color.Yellow);
+                        }
+
+                        AppendConsoleText($"[SUMMARY] Database location: rom_collection.db", Color.FromArgb(150, 150, 150));
+                        AppendConsoleText("", Color.White);
+                        AppendConsoleText("[READY] Database synchronized - ready for viewing and organizing", Color.LimeGreen);
+
+                        // Save scan statistics
+                        var scanStats = new ScanStatistics
+                        {
+                            TotalRoms = totalRoms,
+                            TotalConsoles = consoleStats.Count,
+                            UniqueGenres = genreStats.Count,
+                            ScanDuration = scanResult.Duration,
+                            TotalSizeBytes = 0 // You may want to add this to your scan result
+                        };
+                        settings.Settings.LastScanStats = scanStats;
+                        settings.Settings.LastScanTime = DateTime.Now;
+                    }
+                    catch (Exception ex)
+                    {
+                        AppendConsoleText($"[WARNING] Could not retrieve collection stats: {ex.Message}", Color.Orange);
+                        AppendConsoleText("[READY] Scan completed - data saved to database", Color.LimeGreen);
+                    }
+                }
+                else
+                {
+                    AppendConsoleText("[ERROR] Scan failed - see error messages above", Color.Red);
+                }
+            }
+            catch (Exception ex)
+            {
+                StopProgressAnimation();
+                AppendConsoleText($"[ERROR] Unexpected error: {ex.Message}", Color.Red);
+                AppendConsoleText("[ERROR] Please check the directory path and database permissions", Color.Red);
+            }
+            finally
+            {
+                // Save settings including scan preferences
+                SaveUserSettings();
+
+                // Reset UI
+                isScanning = false;
+                scanProgress.Visible = false;
+                startScanButton.Text = "⚡ Start Scan";
+                startScanButton.Enabled = true;
+                browseButton.Enabled = true;
+            }
+        }
+
+        private async Task StartMemoryScan()
         {
             isScanning = true;
 
@@ -76,7 +353,7 @@ namespace rom_organizer
 
             // Clear console and show scan start
             consoleOutput.ClearText();
-            consoleOutput.AddText("🖥️ ROM Scanner Console", Color.FromArgb(100, 200, 255));
+            consoleOutput.AddText("🖥️ ROM Scanner Console - Memory Mode", Color.FromArgb(100, 200, 255));
             consoleOutput.AddText("", Color.White);
 
             AppendConsoleText("[SCAN] Starting enhanced ROM scan...", Color.Yellow);
@@ -208,6 +485,19 @@ namespace rom_organizer
 
                     AppendConsoleText("", Color.White);
                     AppendConsoleText("[READY] System ready for next operation", Color.LimeGreen);
+
+                    // Save scan statistics for memory mode (reuse the totalSize variable from above)
+                    var scanStats = new ScanStatistics
+                    {
+                        TotalRoms = romInfos.Count,
+                        TotalConsoles = groupedRoms.Count(),
+                        TotalSizeBytes = totalSize,
+                        UniqueGenres = metadataCheckBox.Checked ?
+                            romInfos.Where(r => !string.IsNullOrEmpty(r.PrimaryGenre)).Select(r => r.PrimaryGenre).Distinct().Count() : 0,
+                        ScanDuration = TimeSpan.Zero // You may want to track this
+                    };
+                    settings.Settings.LastScanStats = scanStats;
+                    settings.Settings.LastScanTime = DateTime.Now;
                 }
                 else
                 {
@@ -223,6 +513,9 @@ namespace rom_organizer
             }
             finally
             {
+                // Save settings including scan preferences
+                SaveUserSettings();
+
                 // Reset UI
                 isScanning = false;
                 scanProgress.Visible = false;
@@ -285,7 +578,56 @@ namespace rom_organizer
             }
         }
 
-        // Timer cleanup will be handled by the Designer's Dispose method
-        // No need to override Dispose here since it's already in the Designer.cs
+        // Method to toggle between database and memory scanning modes
+        public void SetScanningMode(bool useDatabase)
+        {
+            settings.UseDatabaseStorage = useDatabase;
+            AppendConsoleText($"[CONFIG] Scanning mode set to: {(useDatabase ? "Database Storage" : "Memory Mode")}", Color.FromArgb(100, 200, 255));
+        }
+
+        // Method to get current scanning status
+        public bool IsScanning => isScanning;
+
+        // Public method to get the current ROM directory (for other tabs to use)
+        public string GetCurrentDirectory()
+        {
+            return settings.IsDirectoryValid() ? settings.LastSelectedDirectory : "";
+        }
+
+        // Public method to get last scan statistics (for other tabs to use)
+        public ScanStatistics GetLastScanStats()
+        {
+            return settings.Settings.LastScanStats;
+        }
+
+        // Handle form closing to save settings
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveUserSettings();
+        }
+
+        // Handle checkbox changes to save preferences immediately
+        private void recursiveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.RecursiveScanning = recursiveCheckBox.Checked;
+        }
+
+        private void metadataCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.ExtractMetadata = metadataCheckBox.Checked;
+        }
+
+        // Timer cleanup - handled by the Designer's Dispose method
+        // The Form1.Designer.cs already contains the Dispose override
+    }
+
+    // Supporting classes and data structures that might be referenced
+    public class ScanResult
+    {
+        public TimeSpan Duration { get; set; }
+        public int FilesFound { get; set; }
+        public int FilesAdded { get; set; }
+        public int FilesUpdated { get; set; }
+        public int FilesRemoved { get; set; }
     }
 }
