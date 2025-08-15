@@ -1,4 +1,5 @@
-﻿using System;
+﻿// scan.cs
+using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
@@ -14,6 +15,12 @@ namespace rom_organizer
 {
     public class RomScanner
     {
+        // ---- Tunables (internal) ----
+        private const int IOBufferBytes = 1024 * 1024;         // 1MB buffered reads for hashing
+        private const int DefaultPerDriveIO = 2;               // limit concurrent file reads per drive
+        private static readonly int MaxDop =
+            Math.Max(1, Environment.ProcessorCount * 2);      // IO-bound friendly parallelism
+
         // Supported ROM extensions
         private static readonly HashSet<string> SupportedExts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -41,7 +48,7 @@ namespace rom_organizer
             {".7z",  "Archives"}
         };
 
-        // Enhanced ROM info with metadata
+        // Enhanced ROM info with metadata (unchanged)
         public class RomInfo
         {
             public string Name { get; set; }
@@ -64,12 +71,12 @@ namespace rom_organizer
             public string Initial { get; set; }
         }
 
-        // Progress callback delegate
+        // Progress callback delegate (unchanged)
         public delegate void ProgressCallback(string message, int filesProcessed = 0);
 
-        // XML metadata cache
-        private static readonly Dictionary<string, Dictionary<string, XmlGameInfo>> XmlCache =
-            new Dictionary<string, Dictionary<string, XmlGameInfo>>();
+        // XML metadata cache (made concurrent for parallel loading)
+        private static readonly ConcurrentDictionary<string, Dictionary<string, XmlGameInfo>> XmlCache =
+            new ConcurrentDictionary<string, Dictionary<string, XmlGameInfo>>();
 
         private class XmlGameInfo
         {
@@ -97,7 +104,7 @@ namespace rom_organizer
             if (extractMetadata && Directory.Exists(xmlDir))
             {
                 progressCallback?.Invoke("Loading XML metadata files...");
-                LoadXmlMetadata(xmlDir);
+                LoadXmlMetadata(xmlDir); // now parallel
             }
 
             // Snapshot files first
@@ -111,12 +118,20 @@ namespace rom_organizer
             var results = new ConcurrentBag<RomInfo>();
             int processedCount = 0;
 
-            // Process in parallel
+            // Per-drive throttling so we don't thrash a single disk
+            var driveLimiters = new ConcurrentDictionary<string, SemaphoreSlim>();
+
+            // Balanced partitions improve throughput when file sizes vary a lot
+            var partitioner = Partitioner.Create(files, loadBalance: true);
+
             Parallel.ForEach(
-                files,
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                partitioner,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDop },
                 file =>
                 {
+                    string drive = Path.GetPathRoot(file) ?? "";
+                    var limiter = driveLimiters.GetOrAdd(drive, _ => new SemaphoreSlim(DefaultPerDriveIO, DefaultPerDriveIO));
+                    limiter.Wait();
                     try
                     {
                         var fi = new FileInfo(file);
@@ -130,7 +145,7 @@ namespace rom_organizer
                             Path = fi.FullName,
                             Size = fi.Length,
                             Modified = fi.LastWriteTime,
-                            Sha1 = ComputeSHA1(fi.FullName),
+                            Sha1 = ComputeSHA1(fi.FullName), // faster streaming SHA1
                             Ext = ext,
                             Console = console
                         };
@@ -150,6 +165,10 @@ namespace rom_organizer
                     catch (Exception ex)
                     {
                         progressCallback?.Invoke($"Error reading {file}: {ex.Message}");
+                    }
+                    finally
+                    {
+                        limiter.Release();
                     }
                 });
 
@@ -179,26 +198,28 @@ namespace rom_organizer
         private static void LoadXmlMetadata(string xmlDir)
         {
             var xmlFiles = Directory.GetFiles(xmlDir, "*.xml");
-
-            foreach (var xmlFile in xmlFiles)
-            {
-                try
+            // Parallel load per-file, each returns its own map, then publish to cache
+            Parallel.ForEach(
+                xmlFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount) },
+                xmlFile =>
                 {
-                    string consoleName = Path.GetFileNameWithoutExtension(xmlFile);
-                    var gameMap = LoadConsoleXmlMap(xmlFile);
-                    XmlCache[consoleName.ToLower()] = gameMap;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading XML {xmlFile}: {ex.Message}");
-                }
-            }
+                    try
+                    {
+                        string consoleName = Path.GetFileNameWithoutExtension(xmlFile);
+                        var gameMap = LoadConsoleXmlMap(xmlFile);
+                        XmlCache[consoleName.ToLower()] = gameMap;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error loading XML {xmlFile}: {ex.Message}");
+                    }
+                });
         }
 
         private static Dictionary<string, XmlGameInfo> LoadConsoleXmlMap(string xmlPath)
         {
             var mapping = new Dictionary<string, XmlGameInfo>();
-
             try
             {
                 var doc = XDocument.Load(xmlPath);
@@ -326,10 +347,10 @@ namespace rom_organizer
             return null;
         }
 
-        // Text processing helpers
-        private static readonly Regex RegionPatterns = new Regex(@"\([^)]*\)|\[[^\]]*\]", RegexOptions.IgnoreCase);
-        private static readonly Regex SeparatorClean = new Regex(@"[_\.]+");
-        private static readonly Regex AlnumOnly = new Regex(@"[^a-z0-9]");
+        // Text processing helpers (precompiled regex for speed)
+        private static readonly Regex RegionPatterns = new Regex(@"\([^)]*\)|\[[^\]]*\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex SeparatorClean = new Regex(@"[_\.]+", RegexOptions.Compiled);
+        private static readonly Regex AlnumOnly = new Regex(@"[^a-z0-9]", RegexOptions.Compiled);
 
         private static string CleanFilenameToTitle(string stem)
         {
@@ -345,7 +366,7 @@ namespace rom_organizer
             s = Regex.Replace(s, @"\s+", " ").Trim();
 
             // Handle "Game, The" -> "The Game"
-            if (s.ToLower().EndsWith(", the"))
+            if (s.EndsWith(", the", StringComparison.OrdinalIgnoreCase))
             {
                 s = "The " + s.Substring(0, s.Length - 5).Trim();
             }
@@ -382,12 +403,21 @@ namespace rom_organizer
             return parts.Length > 0 ? parts[0].Trim() : null;
         }
 
+        // Faster, streamed SHA1 with large buffered sequential reads (same output)
         private static string ComputeSHA1(string filePath)
         {
             using (var sha1 = SHA1.Create())
-            using (var stream = File.OpenRead(filePath))
+            using (var fs = new FileStream(
+                filePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                IOBufferBytes,
+                FileOptions.SequentialScan)) // hint to OS readahead
+            using (var bs = new BufferedStream(fs, IOBufferBytes))
             {
-                byte[] hash = sha1.ComputeHash(stream);
+                // ComputeHash(Stream) is already chunked internally; BufferedStream + SequentialScan cuts syscalls
+                byte[] hash = sha1.ComputeHash(bs);
                 return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
