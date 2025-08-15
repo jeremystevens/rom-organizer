@@ -385,10 +385,12 @@ namespace rom_organizer
         private static string ComputeSHA1(string filePath)
         {
             using (var sha1 = SHA1.Create())
-            using (var stream = File.OpenRead(filePath))
             {
-                byte[] hash = sha1.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                using (var stream = File.OpenRead(filePath))
+                {
+                    byte[] hash = sha1.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
             }
         }
     }
