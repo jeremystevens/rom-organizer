@@ -65,6 +65,54 @@ namespace rom_organizer
         }
 
         /// <summary>
+        /// Gets or sets the last selected output directory for organization
+        /// </summary>
+        public string LastOutputDirectory
+        {
+            get => _settings.LastOutputDirectory ?? "";
+            set
+            {
+                if (_settings.LastOutputDirectory != value)
+                {
+                    _settings.LastOutputDirectory = value;
+                    SaveSettings();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the last used organization method
+        /// </summary>
+        public string LastOrganizationMethod
+        {
+            get => _settings.LastOrganizationMethod ?? "Alphabetical";
+            set
+            {
+                if (_settings.LastOrganizationMethod != value)
+                {
+                    _settings.LastOrganizationMethod = value;
+                    SaveSettings();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether files were moved (true) or copied (false) in last organization
+        /// </summary>
+        public bool LastMoveFiles
+        {
+            get => _settings.LastMoveFiles;
+            set
+            {
+                if (_settings.LastMoveFiles != value)
+                {
+                    _settings.LastMoveFiles = value;
+                    SaveSettings();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets whether recursive scanning is enabled
         /// </summary>
         public bool RecursiveScanning
@@ -187,6 +235,15 @@ namespace rom_organizer
         }
 
         /// <summary>
+        /// Checks if the output directory is valid and exists
+        /// </summary>
+        public bool IsOutputDirectoryValid()
+        {
+            return !string.IsNullOrEmpty(LastOutputDirectory) &&
+                   Directory.Exists(LastOutputDirectory);
+        }
+
+        /// <summary>
         /// Resets all settings to defaults
         /// </summary>
         public void ResetToDefaults()
@@ -207,6 +264,9 @@ namespace rom_organizer
     public class AppSettings
     {
         public string LastSelectedDirectory { get; set; } = "";
+        public string LastOutputDirectory { get; set; } = "";
+        public string LastOrganizationMethod { get; set; } = "Alphabetical";
+        public bool LastMoveFiles { get; set; } = false; // Default to copy mode (safer)
         public bool RecursiveScanning { get; set; } = true;
         public bool ExtractMetadata { get; set; } = true;
         public bool UseDatabaseStorage { get; set; } = true;

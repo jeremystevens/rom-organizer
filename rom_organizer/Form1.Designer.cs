@@ -535,7 +535,6 @@
             this.outputBrowseButton.TabIndex = 2;
             this.outputBrowseButton.Text = "Browse";
             this.outputBrowseButton.TextColor = System.Drawing.Color.White;
-            this.outputBrowseButton.Click += new System.EventHandler(this.outputBrowseButton_Click);
             // 
             // organizeButton
             // 
@@ -552,7 +551,6 @@
             this.organizeButton.TabIndex = 4;
             this.organizeButton.Text = "Organize ROMs";
             this.organizeButton.TextColor = System.Drawing.Color.White;
-            this.organizeButton.Click += new System.EventHandler(this.organizeButton_Click);
             // 
             // organizeOutputGroup
             // 
