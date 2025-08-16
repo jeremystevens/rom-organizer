@@ -93,6 +93,7 @@
     <Compile Include="C:\Users\nites\Downloads\db.cs">
       <Link>db.cs</Link>
     </Compile>
+    <Compile Include="clean.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
