@@ -1070,6 +1070,7 @@ namespace RetroArcadeUI
     }
 
     // CheckBox
+    // CheckBox - FIXED VERSION FOR FLOATING TEXT ISSUE
     public class ArcadeCheckBox : Control
     {
         private bool _Checked = false;
@@ -1099,11 +1100,12 @@ namespace RetroArcadeUI
 
         public ArcadeCheckBox()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer | ControlStyles.SupportsTransparentBackColor, true);
             DoubleBuffered = true;
-            Size = new Size(150, 25);
-            Font = new Font("Orbitron", 10);
-            ForeColor = ArcadeColors.NeonCyan;
+            Size = new Size(250, 25);
+            Font = new Font("Segoe UI", 10F);  // Changed from Orbitron for better readability
+            ForeColor = Color.White;           // Changed to White for better contrast
+            BackColor = Color.Transparent;    // CRITICAL: Make background transparent
             Cursor = Cursors.Hand;
         }
 
@@ -1111,51 +1113,78 @@ namespace RetroArcadeUI
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
-            Rectangle checkRect = new Rectangle(2, 2, 20, 20);
-            Rectangle textRect = new Rectangle(28, 0, Width - 30, Height);
+            // Calculate positions based on actual control height for proper centering
+            int checkSize = 16;  // Smaller size for better proportion
+            int checkY = (Height - checkSize) / 2;  // Center the checkbox vertically
 
-            // Check box background
+            Rectangle checkRect = new Rectangle(2, checkY, checkSize, checkSize);
+            Rectangle textRect = new Rectangle(checkSize + 8, 0, Width - checkSize - 10, Height);
+
+            // IMPORTANT: Clear background for transparency
+            g.Clear(BackColor);
+
+            // Check box background with dark theme
             using (LinearGradientBrush bgBrush = new LinearGradientBrush(checkRect,
-                ArcadeColors.DarkPurple, Color.FromArgb(40, 40, 60), LinearGradientMode.Vertical))
+                Color.FromArgb(45, 45, 60), Color.FromArgb(25, 25, 40), LinearGradientMode.Vertical))
             {
                 g.FillRectangle(bgBrush, checkRect);
             }
 
             // Check box border
-            Color borderColor = _Glowing ? ArcadeColors.NeonCyan : ArcadeColors.CharcoalGray;
-            g.DrawRectangle(new Pen(borderColor, 2), checkRect);
+            Color borderColor = _Glowing ? ArcadeColors.NeonCyan : Color.FromArgb(120, 120, 120);
+            using (Pen borderPen = new Pen(borderColor, 1))
+            {
+                g.DrawRectangle(borderPen, checkRect);
+            }
 
-            // Check mark
+            // Check mark when selected
             if (_Checked)
             {
-                using (Pen checkPen = new Pen(ArcadeColors.NeonGreen, 3))
+                using (Pen checkPen = new Pen(ArcadeColors.NeonGreen, 2))
                 {
-                    g.DrawLines(checkPen, new Point[] {
-                        new Point(6, 12),
-                        new Point(10, 16),
-                        new Point(18, 8)
-                    });
+                    // Calculate check mark points relative to the smaller check box
+                    int offsetX = checkRect.X;
+                    int offsetY = checkRect.Y;
+
+                    Point[] checkPoints = {
+                        new Point(offsetX + 4, offsetY + 8),
+                        new Point(offsetX + 7, offsetY + 11),
+                        new Point(offsetX + 12, offsetY + 5)
+                    };
+
+                    g.DrawLines(checkPen, checkPoints);
                 }
             }
 
-            // Text with glow
+            // Text with proper vertical alignment
+            StringFormat sf = new StringFormat
+            {
+                LineAlignment = StringAlignment.Center,  // Center text vertically
+                Alignment = StringAlignment.Near,
+                Trimming = StringTrimming.EllipsisCharacter
+            };
+
+            // Subtle text glow effect
             if (_Glowing)
             {
-                using (SolidBrush glowBrush = new SolidBrush(Color.FromArgb(100, ForeColor)))
+                using (SolidBrush glowBrush = new SolidBrush(Color.FromArgb(60, ForeColor)))
                 {
-                    g.DrawString(Text, Font, glowBrush,
-                        new Rectangle(textRect.X - 1, textRect.Y - 1, textRect.Width, textRect.Height),
-                        new StringFormat { LineAlignment = StringAlignment.Center });
+                    Rectangle glowRect = new Rectangle(textRect.X + 1, textRect.Y + 1, textRect.Width, textRect.Height);
+                    g.DrawString(Text, Font, glowBrush, glowRect, sf);
                 }
             }
 
-            g.DrawString(Text, Font, new SolidBrush(ForeColor), textRect,
-                new StringFormat { LineAlignment = StringAlignment.Center });
+            // Main text
+            using (SolidBrush textBrush = new SolidBrush(ForeColor))
+            {
+                g.DrawString(Text, Font, textBrush, textRect, sf);
+            }
         }
     }
-
     // RadioButton
+    // RadioButton - FIXED VERSION FOR FLOATING TEXT ISSUE
     public class ArcadeRadioButton : Control
     {
         private bool _Checked = false;
@@ -1206,11 +1235,12 @@ namespace RetroArcadeUI
 
         public ArcadeRadioButton()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.OptimizedDoubleBuffer | ControlStyles.SupportsTransparentBackColor, true);
             DoubleBuffered = true;
-            Size = new Size(150, 25);
-            Font = new Font("Orbitron", 10);
-            ForeColor = ArcadeColors.NeonCyan;
+            Size = new Size(250, 25);
+            Font = new Font("Segoe UI", 10F);  // Changed from Orbitron for better readability
+            ForeColor = Color.White;           // Changed to White for better contrast
+            BackColor = Color.Transparent;    // CRITICAL: Make background transparent
             Cursor = Cursors.Hand;
         }
 
@@ -1218,25 +1248,39 @@ namespace RetroArcadeUI
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
-            Rectangle radioRect = new Rectangle(2, 2, 20, 20);
-            Rectangle textRect = new Rectangle(28, 0, Width - 30, Height);
+            // Calculate positions based on actual control height for proper centering
+            int radioSize = 16;  // Smaller size for better proportion
+            int radioY = (Height - radioSize) / 2;  // Center the radio button vertically
 
-            // Radio button background
+            Rectangle radioRect = new Rectangle(2, radioY, radioSize, radioSize);
+            Rectangle textRect = new Rectangle(radioSize + 8, 0, Width - radioSize - 10, Height);
+
+            // IMPORTANT: Clear background for transparency
+            g.Clear(BackColor);
+
+            // Radio button background with dark theme
             using (LinearGradientBrush bgBrush = new LinearGradientBrush(radioRect,
-                ArcadeColors.DarkPurple, Color.FromArgb(40, 40, 60), LinearGradientMode.Vertical))
+                Color.FromArgb(45, 45, 60), Color.FromArgb(25, 25, 40), LinearGradientMode.Vertical))
             {
                 g.FillEllipse(bgBrush, radioRect);
             }
 
             // Radio button border
-            Color borderColor = _Glowing ? ArcadeColors.NeonCyan : ArcadeColors.CharcoalGray;
-            g.DrawEllipse(new Pen(borderColor, 2), radioRect);
+            Color borderColor = _Glowing ? ArcadeColors.NeonCyan : Color.FromArgb(120, 120, 120);
+            using (Pen borderPen = new Pen(borderColor, 1))
+            {
+                g.DrawEllipse(borderPen, radioRect);
+            }
 
-            // Radio dot
+            // Radio dot when selected
             if (_Checked)
             {
-                Rectangle dotRect = new Rectangle(6, 6, 12, 12);
+                int dotSize = radioSize - 6;
+                int dotOffset = 3;
+                Rectangle dotRect = new Rectangle(radioRect.X + dotOffset, radioRect.Y + dotOffset, dotSize, dotSize);
+
                 using (LinearGradientBrush dotBrush = new LinearGradientBrush(dotRect,
                     ArcadeColors.NeonGreen, ArcadeColors.NeonCyan, LinearGradientMode.Vertical))
                 {
@@ -1244,22 +1288,31 @@ namespace RetroArcadeUI
                 }
             }
 
-            // Text with glow
+            // Text with proper vertical alignment
+            StringFormat sf = new StringFormat
+            {
+                LineAlignment = StringAlignment.Center,  // Center text vertically
+                Alignment = StringAlignment.Near,
+                Trimming = StringTrimming.EllipsisCharacter
+            };
+
+            // Subtle text glow effect
             if (_Glowing)
             {
-                using (SolidBrush glowBrush = new SolidBrush(Color.FromArgb(100, ForeColor)))
+                using (SolidBrush glowBrush = new SolidBrush(Color.FromArgb(60, ForeColor)))
                 {
-                    g.DrawString(Text, Font, glowBrush,
-                        new Rectangle(textRect.X - 1, textRect.Y - 1, textRect.Width, textRect.Height),
-                        new StringFormat { LineAlignment = StringAlignment.Center });
+                    Rectangle glowRect = new Rectangle(textRect.X + 1, textRect.Y + 1, textRect.Width, textRect.Height);
+                    g.DrawString(Text, Font, glowBrush, glowRect, sf);
                 }
             }
 
-            g.DrawString(Text, Font, new SolidBrush(ForeColor), textRect,
-                new StringFormat { LineAlignment = StringAlignment.Center });
+            // Main text
+            using (SolidBrush textBrush = new SolidBrush(ForeColor))
+            {
+                g.DrawString(Text, Font, textBrush, textRect, sf);
+            }
         }
     }
-
     // GroupBox
     public class ArcadeGroupBox : Control
     {

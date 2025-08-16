@@ -61,6 +61,30 @@
             this.organizeButton = new RetroArcadeUI.ArcadeButton();
             this.organizeOutputGroup = new RetroArcadeUI.ArcadeGroupBox();
             this.organizeConsoleOutput = new RetroArcadeUI.ArcadeScrollableTextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.cleanMainPanel = new RetroArcadeUI.ArcadePanel();
+            this.moveDuplicatesCheckBox = new RetroArcadeUI.ArcadeCheckBox();
+            this.cleanTitleLabel = new RetroArcadeUI.ArcadeLabel();
+            this.renameGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.renameHeaderLabel = new RetroArcadeUI.ArcadeLabel();
+            this.namingConventionGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.removeTagsRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.standardFormatRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.customFormatRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.customFormatTextBox = new RetroArcadeUI.ArcadeTextBox();
+            this.renameButton = new RetroArcadeUI.ArcadeButton();
+            this.removeDuplicatesButton = new RetroArcadeUI.ArcadeButton();
+            this.scanDuplicatesButton = new RetroArcadeUI.ArcadeButton();
+            this.deduplicateGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.deduplicateHeaderLabel = new RetroArcadeUI.ArcadeLabel();
+            this.detectionMethodGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.fileHashRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.fileSizeNameRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.nameSimilarityRadio = new RetroArcadeUI.ArcadeRadioButton();
+            this.duplicateHandlingGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.keepBestVersionCheckBox = new RetroArcadeUI.ArcadeCheckBox();
+            this.cleanOutputGroup = new RetroArcadeUI.ArcadeGroupBox();
+            this.cleanConsoleOutput = new RetroArcadeUI.ArcadeScrollableTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.arcadeFormSkin1.SuspendLayout();
@@ -76,6 +100,14 @@
             this.actionOptionsGroup.SuspendLayout();
             this.outputDirectoryGroup.SuspendLayout();
             this.organizeOutputGroup.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.cleanMainPanel.SuspendLayout();
+            this.renameGroup.SuspendLayout();
+            this.namingConventionGroup.SuspendLayout();
+            this.deduplicateGroup.SuspendLayout();
+            this.detectionMethodGroup.SuspendLayout();
+            this.duplicateHandlingGroup.SuspendLayout();
+            this.cleanOutputGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // arcadeFormSkin1
@@ -102,6 +134,7 @@
             // 
             this.arcadeTabControl1.Controls.Add(this.tabPage1);
             this.arcadeTabControl1.Controls.Add(this.tabPage2);
+            this.arcadeTabControl1.Controls.Add(this.tabPage5);
             this.arcadeTabControl1.Controls.Add(this.tabPage3);
             this.arcadeTabControl1.Controls.Add(this.tabPage4);
             this.arcadeTabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
@@ -230,6 +263,7 @@
             // 
             // recursiveCheckBox
             // 
+            this.recursiveCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.recursiveCheckBox.Checked = true;
             this.recursiveCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.recursiveCheckBox.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -243,6 +277,7 @@
             // 
             // metadataCheckBox
             // 
+            this.metadataCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.metadataCheckBox.Checked = true;
             this.metadataCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.metadataCheckBox.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -364,6 +399,7 @@
             // 
             // alphabeticalRadio
             // 
+            this.alphabeticalRadio.BackColor = System.Drawing.Color.Transparent;
             this.alphabeticalRadio.Checked = true;
             this.alphabeticalRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.alphabeticalRadio.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -377,6 +413,7 @@
             // 
             // genreRadio
             // 
+            this.genreRadio.BackColor = System.Drawing.Color.Transparent;
             this.genreRadio.Checked = false;
             this.genreRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.genreRadio.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -390,6 +427,7 @@
             // 
             // consoleRadio
             // 
+            this.consoleRadio.BackColor = System.Drawing.Color.Transparent;
             this.consoleRadio.Checked = false;
             this.consoleRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.consoleRadio.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -417,6 +455,7 @@
             // 
             // moveRomsRadio
             // 
+            this.moveRomsRadio.BackColor = System.Drawing.Color.Transparent;
             this.moveRomsRadio.Checked = false;
             this.moveRomsRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.moveRomsRadio.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -430,6 +469,7 @@
             // 
             // copyRomsRadio
             // 
+            this.copyRomsRadio.BackColor = System.Drawing.Color.Transparent;
             this.copyRomsRadio.Checked = true;
             this.copyRomsRadio.Cursor = System.Windows.Forms.Cursors.Hand;
             this.copyRomsRadio.Font = new System.Drawing.Font("Segoe UI", 11F);
@@ -510,7 +550,7 @@
             this.organizeButton.Name = "organizeButton";
             this.organizeButton.Size = new System.Drawing.Size(180, 40);
             this.organizeButton.TabIndex = 4;
-            this.organizeButton.Text = "📁 Organize ROMs";
+            this.organizeButton.Text = "Organize ROMs";
             this.organizeButton.TextColor = System.Drawing.Color.White;
             // 
             // organizeOutputGroup
@@ -534,6 +574,345 @@
             this.organizeConsoleOutput.Size = new System.Drawing.Size(1160, 120);
             this.organizeConsoleOutput.TabIndex = 0;
             this.organizeConsoleOutput.Text = "Ready to organize ROMs...";
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.tabPage5.Controls.Add(this.cleanMainPanel);
+            this.tabPage5.Location = new System.Drawing.Point(4, 39);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(1389, 803);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Clean ROMs";
+            // 
+            // cleanMainPanel
+            // 
+            this.cleanMainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.cleanMainPanel.Controls.Add(this.moveDuplicatesCheckBox);
+            this.cleanMainPanel.Controls.Add(this.cleanTitleLabel);
+            this.cleanMainPanel.Controls.Add(this.renameGroup);
+            this.cleanMainPanel.Controls.Add(this.removeDuplicatesButton);
+            this.cleanMainPanel.Controls.Add(this.scanDuplicatesButton);
+            this.cleanMainPanel.Controls.Add(this.deduplicateGroup);
+            this.cleanMainPanel.Controls.Add(this.cleanOutputGroup);
+            this.cleanMainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cleanMainPanel.GlowBorder = true;
+            this.cleanMainPanel.Location = new System.Drawing.Point(3, 3);
+            this.cleanMainPanel.Name = "cleanMainPanel";
+            this.cleanMainPanel.ScanLines = true;
+            this.cleanMainPanel.Size = new System.Drawing.Size(1383, 797);
+            this.cleanMainPanel.TabIndex = 0;
+            // 
+            // moveDuplicatesCheckBox
+            // 
+            this.moveDuplicatesCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.moveDuplicatesCheckBox.Checked = true;
+            this.moveDuplicatesCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.moveDuplicatesCheckBox.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.moveDuplicatesCheckBox.ForeColor = System.Drawing.Color.White;
+            this.moveDuplicatesCheckBox.Glowing = false;
+            this.moveDuplicatesCheckBox.Location = new System.Drawing.Point(995, 195);
+            this.moveDuplicatesCheckBox.Name = "moveDuplicatesCheckBox";
+            this.moveDuplicatesCheckBox.Size = new System.Drawing.Size(230, 35);
+            this.moveDuplicatesCheckBox.TabIndex = 0;
+            this.moveDuplicatesCheckBox.Text = "Move duplicates to separate folder";
+            // 
+            // cleanTitleLabel
+            // 
+            this.cleanTitleLabel.BackColor = System.Drawing.Color.Transparent;
+            this.cleanTitleLabel.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
+            this.cleanTitleLabel.ForeColor = System.Drawing.Color.White;
+            this.cleanTitleLabel.Glowing = false;
+            this.cleanTitleLabel.Location = new System.Drawing.Point(60, 30);
+            this.cleanTitleLabel.Name = "cleanTitleLabel";
+            this.cleanTitleLabel.Size = new System.Drawing.Size(400, 50);
+            this.cleanTitleLabel.TabIndex = 0;
+            this.cleanTitleLabel.Text = "Clean & Optimize ROMs";
+            this.cleanTitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.cleanTitleLabel.TextStyle = RetroArcadeUI.ArcadeLabel.ArcadeTextStyle.Normal;
+            // 
+            // renameGroup
+            // 
+            this.renameGroup.Controls.Add(this.renameHeaderLabel);
+            this.renameGroup.Controls.Add(this.namingConventionGroup);
+            this.renameGroup.Controls.Add(this.renameButton);
+            this.renameGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.renameGroup.GlowBorder = false;
+            this.renameGroup.HeaderText = "";
+            this.renameGroup.Location = new System.Drawing.Point(60, 100);
+            this.renameGroup.Name = "renameGroup";
+            this.renameGroup.Padding = new System.Windows.Forms.Padding(10);
+            this.renameGroup.ScanLines = false;
+            this.renameGroup.Size = new System.Drawing.Size(580, 280);
+            this.renameGroup.TabIndex = 1;
+            // 
+            // renameHeaderLabel
+            // 
+            this.renameHeaderLabel.BackColor = System.Drawing.Color.Transparent;
+            this.renameHeaderLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.renameHeaderLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(200)))), ((int)(((byte)(255)))));
+            this.renameHeaderLabel.Glowing = false;
+            this.renameHeaderLabel.Location = new System.Drawing.Point(20, 15);
+            this.renameHeaderLabel.Name = "renameHeaderLabel";
+            this.renameHeaderLabel.Size = new System.Drawing.Size(250, 30);
+            this.renameHeaderLabel.TabIndex = 0;
+            this.renameHeaderLabel.Text = "[R] Rename ROMs";
+            this.renameHeaderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.renameHeaderLabel.TextStyle = RetroArcadeUI.ArcadeLabel.ArcadeTextStyle.Normal;
+            // 
+            // namingConventionGroup
+            // 
+            this.namingConventionGroup.Controls.Add(this.removeTagsRadio);
+            this.namingConventionGroup.Controls.Add(this.standardFormatRadio);
+            this.namingConventionGroup.Controls.Add(this.customFormatRadio);
+            this.namingConventionGroup.Controls.Add(this.customFormatTextBox);
+            this.namingConventionGroup.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.namingConventionGroup.GlowBorder = false;
+            this.namingConventionGroup.HeaderText = "Naming Convention";
+            this.namingConventionGroup.Location = new System.Drawing.Point(20, 55);
+            this.namingConventionGroup.Name = "namingConventionGroup";
+            this.namingConventionGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
+            this.namingConventionGroup.ScanLines = false;
+            this.namingConventionGroup.Size = new System.Drawing.Size(540, 170);
+            this.namingConventionGroup.TabIndex = 1;
+            // 
+            // removeTagsRadio
+            // 
+            this.removeTagsRadio.BackColor = System.Drawing.Color.Transparent;
+            this.removeTagsRadio.Checked = true;
+            this.removeTagsRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.removeTagsRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.removeTagsRadio.ForeColor = System.Drawing.Color.White;
+            this.removeTagsRadio.Glowing = false;
+            this.removeTagsRadio.Location = new System.Drawing.Point(20, 40);
+            this.removeTagsRadio.Name = "removeTagsRadio";
+            this.removeTagsRadio.Size = new System.Drawing.Size(300, 25);
+            this.removeTagsRadio.TabIndex = 0;
+            this.removeTagsRadio.Text = "Remove region/language tags";
+            // 
+            // standardFormatRadio
+            // 
+            this.standardFormatRadio.BackColor = System.Drawing.Color.Transparent;
+            this.standardFormatRadio.Checked = false;
+            this.standardFormatRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.standardFormatRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.standardFormatRadio.ForeColor = System.Drawing.Color.White;
+            this.standardFormatRadio.Glowing = false;
+            this.standardFormatRadio.Location = new System.Drawing.Point(20, 70);
+            this.standardFormatRadio.Name = "standardFormatRadio";
+            this.standardFormatRadio.Size = new System.Drawing.Size(300, 25);
+            this.standardFormatRadio.TabIndex = 1;
+            this.standardFormatRadio.Text = "Standard format: Game Name (Region)";
+            // 
+            // customFormatRadio
+            // 
+            this.customFormatRadio.BackColor = System.Drawing.Color.Transparent;
+            this.customFormatRadio.Checked = false;
+            this.customFormatRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.customFormatRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.customFormatRadio.ForeColor = System.Drawing.Color.White;
+            this.customFormatRadio.Glowing = false;
+            this.customFormatRadio.Location = new System.Drawing.Point(20, 100);
+            this.customFormatRadio.Name = "customFormatRadio";
+            this.customFormatRadio.Size = new System.Drawing.Size(150, 25);
+            this.customFormatRadio.TabIndex = 2;
+            this.customFormatRadio.Text = "Custom format:";
+            // 
+            // customFormatTextBox
+            // 
+            this.customFormatTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.customFormatTextBox.Glowing = false;
+            this.customFormatTextBox.Location = new System.Drawing.Point(40, 130);
+            this.customFormatTextBox.Name = "customFormatTextBox";
+            this.customFormatTextBox.ReadOnly = false;
+            this.customFormatTextBox.Size = new System.Drawing.Size(480, 25);
+            this.customFormatTextBox.TabIndex = 3;
+            this.customFormatTextBox.Text = "e.g., {name} [{region}] ({year})";
+            // 
+            // renameButton
+            // 
+            this.renameButton.BackColor = System.Drawing.Color.Transparent;
+            this.renameButton.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(144)))), ((int)(((byte)(220)))));
+            this.renameButton.CrispText = true;
+            this.renameButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.renameButton.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.renameButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.renameButton.Glowing = false;
+            this.renameButton.Location = new System.Drawing.Point(20, 235);
+            this.renameButton.Name = "renameButton";
+            this.renameButton.Size = new System.Drawing.Size(150, 35);
+            this.renameButton.TabIndex = 2;
+            this.renameButton.Text = "[R] Apply Renames";
+            this.renameButton.TextColor = System.Drawing.Color.White;
+            // 
+            // removeDuplicatesButton
+            // 
+            this.removeDuplicatesButton.BackColor = System.Drawing.Color.Transparent;
+            this.removeDuplicatesButton.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(140)))), ((int)(((byte)(0)))));
+            this.removeDuplicatesButton.CrispText = true;
+            this.removeDuplicatesButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.removeDuplicatesButton.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.removeDuplicatesButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.removeDuplicatesButton.Glowing = false;
+            this.removeDuplicatesButton.Location = new System.Drawing.Point(995, 300);
+            this.removeDuplicatesButton.Name = "removeDuplicatesButton";
+            this.removeDuplicatesButton.Size = new System.Drawing.Size(170, 35);
+            this.removeDuplicatesButton.TabIndex = 4;
+            this.removeDuplicatesButton.Text = "[X] Remove Duplicates";
+            this.removeDuplicatesButton.TextColor = System.Drawing.Color.White;
+            // 
+            // scanDuplicatesButton
+            // 
+            this.scanDuplicatesButton.BackColor = System.Drawing.Color.Transparent;
+            this.scanDuplicatesButton.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(144)))), ((int)(((byte)(220)))));
+            this.scanDuplicatesButton.CrispText = true;
+            this.scanDuplicatesButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.scanDuplicatesButton.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.scanDuplicatesButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.scanDuplicatesButton.Glowing = false;
+            this.scanDuplicatesButton.Location = new System.Drawing.Point(695, 300);
+            this.scanDuplicatesButton.Name = "scanDuplicatesButton";
+            this.scanDuplicatesButton.Size = new System.Drawing.Size(160, 35);
+            this.scanDuplicatesButton.TabIndex = 3;
+            this.scanDuplicatesButton.Text = "[S] Scan for Duplicates";
+            this.scanDuplicatesButton.TextColor = System.Drawing.Color.White;
+            // 
+            // deduplicateGroup
+            // 
+            this.deduplicateGroup.Controls.Add(this.deduplicateHeaderLabel);
+            this.deduplicateGroup.Controls.Add(this.detectionMethodGroup);
+            this.deduplicateGroup.Controls.Add(this.duplicateHandlingGroup);
+            this.deduplicateGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.deduplicateGroup.GlowBorder = false;
+            this.deduplicateGroup.HeaderText = "";
+            this.deduplicateGroup.Location = new System.Drawing.Point(660, 100);
+            this.deduplicateGroup.Name = "deduplicateGroup";
+            this.deduplicateGroup.Padding = new System.Windows.Forms.Padding(10);
+            this.deduplicateGroup.ScanLines = false;
+            this.deduplicateGroup.Size = new System.Drawing.Size(600, 280);
+            this.deduplicateGroup.TabIndex = 2;
+            // 
+            // deduplicateHeaderLabel
+            // 
+            this.deduplicateHeaderLabel.BackColor = System.Drawing.Color.Transparent;
+            this.deduplicateHeaderLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.deduplicateHeaderLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(165)))), ((int)(((byte)(0)))));
+            this.deduplicateHeaderLabel.Glowing = false;
+            this.deduplicateHeaderLabel.Location = new System.Drawing.Point(20, 15);
+            this.deduplicateHeaderLabel.Name = "deduplicateHeaderLabel";
+            this.deduplicateHeaderLabel.Size = new System.Drawing.Size(300, 30);
+            this.deduplicateHeaderLabel.TabIndex = 0;
+            this.deduplicateHeaderLabel.Text = "[D] Remove Duplicates";
+            this.deduplicateHeaderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.deduplicateHeaderLabel.TextStyle = RetroArcadeUI.ArcadeLabel.ArcadeTextStyle.Normal;
+            // 
+            // detectionMethodGroup
+            // 
+            this.detectionMethodGroup.Controls.Add(this.fileHashRadio);
+            this.detectionMethodGroup.Controls.Add(this.fileSizeNameRadio);
+            this.detectionMethodGroup.Controls.Add(this.nameSimilarityRadio);
+            this.detectionMethodGroup.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.detectionMethodGroup.GlowBorder = false;
+            this.detectionMethodGroup.HeaderText = "Detection Method";
+            this.detectionMethodGroup.Location = new System.Drawing.Point(20, 55);
+            this.detectionMethodGroup.Name = "detectionMethodGroup";
+            this.detectionMethodGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
+            this.detectionMethodGroup.ScanLines = false;
+            this.detectionMethodGroup.Size = new System.Drawing.Size(280, 120);
+            this.detectionMethodGroup.TabIndex = 1;
+            // 
+            // fileHashRadio
+            // 
+            this.fileHashRadio.BackColor = System.Drawing.Color.Transparent;
+            this.fileHashRadio.Checked = true;
+            this.fileHashRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.fileHashRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.fileHashRadio.ForeColor = System.Drawing.Color.White;
+            this.fileHashRadio.Glowing = false;
+            this.fileHashRadio.Location = new System.Drawing.Point(15, 40);
+            this.fileHashRadio.Name = "fileHashRadio";
+            this.fileHashRadio.Size = new System.Drawing.Size(250, 35);
+            this.fileHashRadio.TabIndex = 0;
+            this.fileHashRadio.Text = "File hash (MD5/SHA1) — Most accurate";
+            // 
+            // fileSizeNameRadio
+            // 
+            this.fileSizeNameRadio.BackColor = System.Drawing.Color.Transparent;
+            this.fileSizeNameRadio.Checked = false;
+            this.fileSizeNameRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.fileSizeNameRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.fileSizeNameRadio.ForeColor = System.Drawing.Color.White;
+            this.fileSizeNameRadio.Glowing = false;
+            this.fileSizeNameRadio.Location = new System.Drawing.Point(15, 75);
+            this.fileSizeNameRadio.Name = "fileSizeNameRadio";
+            this.fileSizeNameRadio.Size = new System.Drawing.Size(250, 25);
+            this.fileSizeNameRadio.TabIndex = 1;
+            this.fileSizeNameRadio.Text = "File size and name comparison";
+            // 
+            // nameSimilarityRadio
+            // 
+            this.nameSimilarityRadio.BackColor = System.Drawing.Color.Transparent;
+            this.nameSimilarityRadio.Checked = false;
+            this.nameSimilarityRadio.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.nameSimilarityRadio.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.nameSimilarityRadio.ForeColor = System.Drawing.Color.White;
+            this.nameSimilarityRadio.Glowing = false;
+            this.nameSimilarityRadio.Location = new System.Drawing.Point(15, 100);
+            this.nameSimilarityRadio.Name = "nameSimilarityRadio";
+            this.nameSimilarityRadio.Size = new System.Drawing.Size(250, 25);
+            this.nameSimilarityRadio.TabIndex = 2;
+            this.nameSimilarityRadio.Text = "Name similarity only";
+            // 
+            // duplicateHandlingGroup
+            // 
+            this.duplicateHandlingGroup.Controls.Add(this.keepBestVersionCheckBox);
+            this.duplicateHandlingGroup.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.duplicateHandlingGroup.GlowBorder = false;
+            this.duplicateHandlingGroup.HeaderText = "Duplicate Handling";
+            this.duplicateHandlingGroup.Location = new System.Drawing.Point(320, 55);
+            this.duplicateHandlingGroup.Name = "duplicateHandlingGroup";
+            this.duplicateHandlingGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
+            this.duplicateHandlingGroup.ScanLines = false;
+            this.duplicateHandlingGroup.Size = new System.Drawing.Size(260, 120);
+            this.duplicateHandlingGroup.TabIndex = 2;
+            // 
+            // keepBestVersionCheckBox
+            // 
+            this.keepBestVersionCheckBox.BackColor = System.Drawing.Color.Transparent;
+            this.keepBestVersionCheckBox.Checked = true;
+            this.keepBestVersionCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.keepBestVersionCheckBox.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.keepBestVersionCheckBox.ForeColor = System.Drawing.Color.White;
+            this.keepBestVersionCheckBox.Glowing = false;
+            this.keepBestVersionCheckBox.Location = new System.Drawing.Point(15, 75);
+            this.keepBestVersionCheckBox.Name = "keepBestVersionCheckBox";
+            this.keepBestVersionCheckBox.Size = new System.Drawing.Size(230, 50);
+            this.keepBestVersionCheckBox.TabIndex = 1;
+            this.keepBestVersionCheckBox.Text = "Keep best version (prefer no-intro/redump)";
+            // 
+            // cleanOutputGroup
+            // 
+            this.cleanOutputGroup.Controls.Add(this.cleanConsoleOutput);
+            this.cleanOutputGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.cleanOutputGroup.GlowBorder = false;
+            this.cleanOutputGroup.HeaderText = "Clean & Optimize Output";
+            this.cleanOutputGroup.Location = new System.Drawing.Point(60, 400);
+            this.cleanOutputGroup.Name = "cleanOutputGroup";
+            this.cleanOutputGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
+            this.cleanOutputGroup.ScanLines = false;
+            this.cleanOutputGroup.Size = new System.Drawing.Size(1200, 330);
+            this.cleanOutputGroup.TabIndex = 3;
+            // 
+            // cleanConsoleOutput
+            // 
+            this.cleanConsoleOutput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.cleanConsoleOutput.Location = new System.Drawing.Point(20, 40);
+            this.cleanConsoleOutput.Name = "cleanConsoleOutput";
+            this.cleanConsoleOutput.Size = new System.Drawing.Size(1160, 270);
+            this.cleanConsoleOutput.TabIndex = 0;
+            this.cleanConsoleOutput.Text = "Ready to clean and optimize ROM collection...\nSelect renaming convention or dupli" +
+    "cate detection method and click the appropriate button.";
             // 
             // tabPage3
             // 
@@ -577,6 +956,14 @@
             this.actionOptionsGroup.ResumeLayout(false);
             this.outputDirectoryGroup.ResumeLayout(false);
             this.organizeOutputGroup.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.cleanMainPanel.ResumeLayout(false);
+            this.renameGroup.ResumeLayout(false);
+            this.namingConventionGroup.ResumeLayout(false);
+            this.deduplicateGroup.ResumeLayout(false);
+            this.detectionMethodGroup.ResumeLayout(false);
+            this.duplicateHandlingGroup.ResumeLayout(false);
+            this.cleanOutputGroup.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -589,6 +976,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage5;
 
         // ROM Scanner Controls
         private RetroArcadeUI.ArcadePanel scanMainPanel;
@@ -622,5 +1010,30 @@
         private RetroArcadeUI.ArcadeButton organizeButton;
         private RetroArcadeUI.ArcadeGroupBox organizeOutputGroup;
         private RetroArcadeUI.ArcadeScrollableTextBox organizeConsoleOutput;
+
+        // Clean ROMs Tab Controls
+        private RetroArcadeUI.ArcadePanel cleanMainPanel;
+        private RetroArcadeUI.ArcadeLabel cleanTitleLabel;
+        private RetroArcadeUI.ArcadeGroupBox renameGroup;
+        private RetroArcadeUI.ArcadeLabel renameHeaderLabel;
+        private RetroArcadeUI.ArcadeGroupBox namingConventionGroup;
+        private RetroArcadeUI.ArcadeRadioButton removeTagsRadio;
+        private RetroArcadeUI.ArcadeRadioButton standardFormatRadio;
+        private RetroArcadeUI.ArcadeRadioButton customFormatRadio;
+        private RetroArcadeUI.ArcadeTextBox customFormatTextBox;
+        private RetroArcadeUI.ArcadeButton renameButton;
+        private RetroArcadeUI.ArcadeGroupBox deduplicateGroup;
+        private RetroArcadeUI.ArcadeLabel deduplicateHeaderLabel;
+        private RetroArcadeUI.ArcadeGroupBox detectionMethodGroup;
+        private RetroArcadeUI.ArcadeRadioButton fileHashRadio;
+        private RetroArcadeUI.ArcadeRadioButton fileSizeNameRadio;
+        private RetroArcadeUI.ArcadeRadioButton nameSimilarityRadio;
+        private RetroArcadeUI.ArcadeGroupBox duplicateHandlingGroup;
+        private RetroArcadeUI.ArcadeCheckBox moveDuplicatesCheckBox;
+        private RetroArcadeUI.ArcadeCheckBox keepBestVersionCheckBox;
+        private RetroArcadeUI.ArcadeButton scanDuplicatesButton;
+        private RetroArcadeUI.ArcadeButton removeDuplicatesButton;
+        private RetroArcadeUI.ArcadeGroupBox cleanOutputGroup;
+        private RetroArcadeUI.ArcadeScrollableTextBox cleanConsoleOutput;
     }
 }
