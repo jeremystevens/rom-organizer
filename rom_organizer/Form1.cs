@@ -78,6 +78,13 @@ namespace rom_organizer
             }
 
             AppendConsoleText("", Color.White);
+
+            // Initialize organize console
+            organizeConsoleOutput.ClearText();
+            organizeConsoleOutput.AddText("📁 ROM Organizer Console", Color.FromArgb(100, 200, 255));
+            organizeConsoleOutput.AddText("", Color.White);
+            organizeConsoleOutput.AddText("Ready to organize ROMs...", Color.FromArgb(150, 150, 150));
+            organizeConsoleOutput.AddText("Select directories and options, then click 'Organize ROMs'", Color.FromArgb(150, 150, 150));
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -99,6 +106,155 @@ namespace rom_organizer
                     settings.LastSelectedDirectory = dialog.SelectedPath; // Save immediately
                     AppendConsoleText($"[INFO] Directory selected and saved: {dialog.SelectedPath}", Color.FromArgb(100, 200, 255));
                 }
+            }
+        }
+
+        // NEW: Sort ROMs tab - Output Browse Button
+        private void outputBrowseButton_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                dialog.Description = "Select Output Directory for Organized ROMs";
+                dialog.ShowNewFolderButton = true;
+
+                // Start from a reasonable default location
+                if (!string.IsNullOrEmpty(outputDirectoryTextBox.Text) &&
+                    outputDirectoryTextBox.Text != "Choose a folder for organized ROMs..." &&
+                    Directory.Exists(outputDirectoryTextBox.Text))
+                {
+                    dialog.SelectedPath = outputDirectoryTextBox.Text;
+                }
+                else if (settings.IsDirectoryValid())
+                {
+                    // Default to parent of ROM directory
+                    string parentDir = Path.GetDirectoryName(settings.LastSelectedDirectory);
+                    if (!string.IsNullOrEmpty(parentDir) && Directory.Exists(parentDir))
+                    {
+                        dialog.SelectedPath = parentDir;
+                    }
+                }
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    outputDirectoryTextBox.Text = dialog.SelectedPath;
+                    AppendOrganizeConsoleText($"[INFO] Output directory selected: {dialog.SelectedPath}", Color.FromArgb(100, 200, 255));
+                }
+            }
+        }
+
+        // NEW: Sort ROMs tab - Organize Button
+        private void organizeButton_Click(object sender, EventArgs e)
+        {
+            // Check if input directory is available (from scan)
+            if (string.IsNullOrEmpty(GetCurrentDirectory()))
+            {
+                AppendOrganizeConsoleText("[ERROR] Please scan ROMs first from the Scan ROM tab!", Color.Red);
+                AppendOrganizeConsoleText("[INFO] The organize function requires scanned ROM data", Color.FromArgb(150, 150, 150));
+                return;
+            }
+
+            // Check if output directory is selected
+            if (outputDirectoryTextBox.Text == "Choose a folder for organized ROMs..." || string.IsNullOrEmpty(outputDirectoryTextBox.Text))
+            {
+                AppendOrganizeConsoleText("[ERROR] Please select an output directory first!", Color.Red);
+                AppendOrganizeConsoleText("[INFO] Click 'Browse' to choose where organized ROMs will be placed", Color.FromArgb(150, 150, 150));
+                return;
+            }
+
+            // Check if output directory exists
+            if (!Directory.Exists(outputDirectoryTextBox.Text))
+            {
+                AppendOrganizeConsoleText("[ERROR] Selected output directory does not exist!", Color.Red);
+                return;
+            }
+
+            // Get selected organization method
+            string organizationMethod = "Alphabetical"; // Default
+            if (genreRadio.Checked)
+                organizationMethod = "Genre";
+            else if (consoleRadio.Checked)
+                organizationMethod = "Console";
+
+            // Get selected action
+            bool moveFiles = moveRomsRadio.Checked;
+            string action = moveFiles ? "move" : "copy";
+
+            // Clear console and show start message
+            organizeConsoleOutput.ClearText();
+            organizeConsoleOutput.AddText("📁 ROM Organizer Console", Color.FromArgb(100, 200, 255));
+            organizeConsoleOutput.AddText("", Color.White);
+            AppendOrganizeConsoleText($"[ORGANIZE] Starting ROM organization...", Color.Yellow);
+            AppendOrganizeConsoleText($"[ORGANIZE] Method: {organizationMethod}", Color.FromArgb(100, 200, 255));
+            AppendOrganizeConsoleText($"[ORGANIZE] Action: {action.ToUpper()} files", Color.FromArgb(100, 200, 255));
+            AppendOrganizeConsoleText($"[ORGANIZE] Source: {GetCurrentDirectory()}", Color.FromArgb(100, 200, 255));
+            AppendOrganizeConsoleText($"[ORGANIZE] Output: {outputDirectoryTextBox.Text}", Color.FromArgb(100, 200, 255));
+            AppendOrganizeConsoleText("", Color.White);
+
+            // Show scan statistics if available
+            var lastScanStats = GetLastScanStats();
+            if (lastScanStats != null)
+            {
+                AppendOrganizeConsoleText($"[INFO] Found {lastScanStats.TotalRoms} ROMs across {lastScanStats.TotalConsoles} console types", Color.FromArgb(150, 150, 150));
+                AppendOrganizeConsoleText("", Color.White);
+            }
+
+            // Start organization process
+            StartRomOrganization(organizationMethod, moveFiles);
+        }
+
+        private async void StartRomOrganization(string method, bool moveFiles)
+        {
+            try
+            {
+                // Disable UI during organization
+                organizeButton.Enabled = false;
+                outputBrowseButton.Enabled = false;
+
+                AppendOrganizeConsoleText("[ORGANIZE] Reading ROM collection data...", Color.Cyan);
+
+                // Simulate organization process (replace with actual ROM organization logic)
+                await Task.Run(async () =>
+                {
+                    // This is where you would implement the actual ROM organization logic
+                    // For now, we'll simulate the process
+
+                    await Task.Delay(1000); // Simulate processing time
+
+                    // Update UI on main thread
+                    Invoke(new Action(() =>
+                    {
+                        AppendOrganizeConsoleText("[ORGANIZE] Creating directory structure...", Color.Cyan);
+                    }));
+
+                    await Task.Delay(500);
+
+                    Invoke(new Action(() =>
+                    {
+                        AppendOrganizeConsoleText($"[ORGANIZE] Processing files using {method} method...", Color.Cyan);
+                    }));
+
+                    await Task.Delay(1500);
+
+                    Invoke(new Action(() =>
+                    {
+                        string actionWord = moveFiles ? "moved" : "copied";
+                        AppendOrganizeConsoleText($"[SUCCESS] ROM organization completed!", Color.LimeGreen);
+                        AppendOrganizeConsoleText($"[SUCCESS] Files {actionWord} to organized structure", Color.LimeGreen);
+                        AppendOrganizeConsoleText("", Color.White);
+                        AppendOrganizeConsoleText("[TODO] Full ROM organization functionality will be implemented", Color.Orange);
+                        AppendOrganizeConsoleText("[INFO] This is a preview of the organization process", Color.FromArgb(150, 150, 150));
+                    }));
+                });
+            }
+            catch (Exception ex)
+            {
+                AppendOrganizeConsoleText($"[ERROR] Organization failed: {ex.Message}", Color.Red);
+            }
+            finally
+            {
+                // Re-enable UI
+                organizeButton.Enabled = true;
+                outputBrowseButton.Enabled = true;
             }
         }
 
@@ -544,6 +700,19 @@ namespace rom_organizer
             else
             {
                 consoleOutput.AddText(text, color);
+            }
+        }
+
+        // Helper method for organize console output
+        private void AppendOrganizeConsoleText(string text, Color color)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => organizeConsoleOutput.AddText(text, color)));
+            }
+            else
+            {
+                organizeConsoleOutput.AddText(text, color);
             }
         }
 

@@ -87,6 +87,7 @@
             this.cleanConsoleOutput = new RetroArcadeUI.ArcadeScrollableTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.retroGroupBox1 = new RetroForms.RetroGroupBox();
             this.arcadeFormSkin1.SuspendLayout();
             this.arcadeTabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -99,7 +100,6 @@
             this.organizationMethodGroup.SuspendLayout();
             this.actionOptionsGroup.SuspendLayout();
             this.outputDirectoryGroup.SuspendLayout();
-            this.organizeOutputGroup.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.cleanMainPanel.SuspendLayout();
             this.renameGroup.SuspendLayout();
@@ -108,6 +108,7 @@
             this.detectionMethodGroup.SuspendLayout();
             this.duplicateHandlingGroup.SuspendLayout();
             this.cleanOutputGroup.SuspendLayout();
+            this.retroGroupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // arcadeFormSkin1
@@ -161,10 +162,12 @@
             // scanMainPanel
             // 
             this.scanMainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.scanMainPanel.Controls.Add(this.directoryTextBox);
+            this.scanMainPanel.Controls.Add(this.directoryLabel);
+            this.scanMainPanel.Controls.Add(this.startScanButton);
+            this.scanMainPanel.Controls.Add(this.optionsGroup);
             this.scanMainPanel.Controls.Add(this.titleLabel);
             this.scanMainPanel.Controls.Add(this.directoryGroup);
-            this.scanMainPanel.Controls.Add(this.optionsGroup);
-            this.scanMainPanel.Controls.Add(this.startScanButton);
             this.scanMainPanel.Controls.Add(this.scanProgress);
             this.scanMainPanel.Controls.Add(this.consoleGroup);
             this.scanMainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -181,7 +184,7 @@
             this.titleLabel.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
             this.titleLabel.ForeColor = System.Drawing.Color.White;
             this.titleLabel.Glowing = false;
-            this.titleLabel.Location = new System.Drawing.Point(60, 30);
+            this.titleLabel.Location = new System.Drawing.Point(28, 30);
             this.titleLabel.Name = "titleLabel";
             this.titleLabel.Size = new System.Drawing.Size(400, 50);
             this.titleLabel.TabIndex = 0;
@@ -192,8 +195,6 @@
             // directoryGroup
             // 
             this.directoryGroup.BackColor = System.Drawing.Color.White;
-            this.directoryGroup.Controls.Add(this.directoryLabel);
-            this.directoryGroup.Controls.Add(this.directoryTextBox);
             this.directoryGroup.Controls.Add(this.browseButton);
             this.directoryGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.directoryGroup.GlowBorder = false;
@@ -202,7 +203,7 @@
             this.directoryGroup.Name = "directoryGroup";
             this.directoryGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.directoryGroup.ScanLines = false;
-            this.directoryGroup.Size = new System.Drawing.Size(1200, 80);
+            this.directoryGroup.Size = new System.Drawing.Size(1200, 277);
             this.directoryGroup.TabIndex = 1;
             // 
             // directoryLabel
@@ -211,7 +212,7 @@
             this.directoryLabel.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.directoryLabel.ForeColor = System.Drawing.Color.White;
             this.directoryLabel.Glowing = false;
-            this.directoryLabel.Location = new System.Drawing.Point(20, 30);
+            this.directoryLabel.Location = new System.Drawing.Point(76, 130);
             this.directoryLabel.Name = "directoryLabel";
             this.directoryLabel.Size = new System.Drawing.Size(130, 30);
             this.directoryLabel.TabIndex = 0;
@@ -223,7 +224,7 @@
             // 
             this.directoryTextBox.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.directoryTextBox.Glowing = false;
-            this.directoryTextBox.Location = new System.Drawing.Point(160, 30);
+            this.directoryTextBox.Location = new System.Drawing.Point(212, 130);
             this.directoryTextBox.Name = "directoryTextBox";
             this.directoryTextBox.ReadOnly = true;
             this.directoryTextBox.Size = new System.Drawing.Size(800, 30);
@@ -239,7 +240,7 @@
             this.browseButton.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.browseButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.browseButton.Glowing = false;
-            this.browseButton.Location = new System.Drawing.Point(980, 30);
+            this.browseButton.Location = new System.Drawing.Point(974, 30);
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(100, 30);
             this.browseButton.TabIndex = 2;
@@ -249,16 +250,17 @@
             // 
             // optionsGroup
             // 
+            this.optionsGroup.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(27)))));
             this.optionsGroup.Controls.Add(this.recursiveCheckBox);
             this.optionsGroup.Controls.Add(this.metadataCheckBox);
             this.optionsGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.optionsGroup.GlowBorder = false;
+            this.optionsGroup.GlowBorder = true;
             this.optionsGroup.HeaderText = "Scan Options";
-            this.optionsGroup.Location = new System.Drawing.Point(60, 200);
+            this.optionsGroup.Location = new System.Drawing.Point(80, 171);
             this.optionsGroup.Name = "optionsGroup";
             this.optionsGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.optionsGroup.ScanLines = false;
-            this.optionsGroup.Size = new System.Drawing.Size(400, 120);
+            this.optionsGroup.Size = new System.Drawing.Size(400, 139);
             this.optionsGroup.TabIndex = 2;
             // 
             // recursiveCheckBox
@@ -298,7 +300,7 @@
             this.startScanButton.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.startScanButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.startScanButton.Glowing = false;
-            this.startScanButton.Location = new System.Drawing.Point(60, 340);
+            this.startScanButton.Location = new System.Drawing.Point(80, 326);
             this.startScanButton.Name = "startScanButton";
             this.startScanButton.Size = new System.Drawing.Size(150, 40);
             this.startScanButton.TabIndex = 3;
@@ -311,7 +313,7 @@
             this.scanProgress.Animated = true;
             this.scanProgress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(30)))));
             this.scanProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
-            this.scanProgress.Location = new System.Drawing.Point(230, 350);
+            this.scanProgress.Location = new System.Drawing.Point(289, 326);
             this.scanProgress.Maximum = 100;
             this.scanProgress.Name = "scanProgress";
             this.scanProgress.Size = new System.Drawing.Size(400, 20);
@@ -354,11 +356,9 @@
             // organizeMainPanel
             // 
             this.organizeMainPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.organizeMainPanel.Controls.Add(this.organizeConsoleOutput);
             this.organizeMainPanel.Controls.Add(this.organizeTitleLabel);
-            this.organizeMainPanel.Controls.Add(this.organizationMethodGroup);
-            this.organizeMainPanel.Controls.Add(this.actionOptionsGroup);
-            this.organizeMainPanel.Controls.Add(this.outputDirectoryGroup);
-            this.organizeMainPanel.Controls.Add(this.organizeButton);
+            this.organizeMainPanel.Controls.Add(this.retroGroupBox1);
             this.organizeMainPanel.Controls.Add(this.organizeOutputGroup);
             this.organizeMainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.organizeMainPanel.GlowBorder = true;
@@ -374,9 +374,9 @@
             this.organizeTitleLabel.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold);
             this.organizeTitleLabel.ForeColor = System.Drawing.Color.White;
             this.organizeTitleLabel.Glowing = false;
-            this.organizeTitleLabel.Location = new System.Drawing.Point(63, 31);
+            this.organizeTitleLabel.Location = new System.Drawing.Point(58, 0);
             this.organizeTitleLabel.Name = "organizeTitleLabel";
-            this.organizeTitleLabel.Size = new System.Drawing.Size(360, 50);
+            this.organizeTitleLabel.Size = new System.Drawing.Size(261, 50);
             this.organizeTitleLabel.TabIndex = 0;
             this.organizeTitleLabel.Text = "Organize ROMs";
             this.organizeTitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -390,11 +390,11 @@
             this.organizationMethodGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.organizationMethodGroup.GlowBorder = false;
             this.organizationMethodGroup.HeaderText = "Organizational Method";
-            this.organizationMethodGroup.Location = new System.Drawing.Point(60, 100);
+            this.organizationMethodGroup.Location = new System.Drawing.Point(20, 19);
             this.organizationMethodGroup.Name = "organizationMethodGroup";
             this.organizationMethodGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.organizationMethodGroup.ScanLines = false;
-            this.organizationMethodGroup.Size = new System.Drawing.Size(500, 150);
+            this.organizationMethodGroup.Size = new System.Drawing.Size(400, 150);
             this.organizationMethodGroup.TabIndex = 1;
             // 
             // alphabeticalRadio
@@ -446,11 +446,11 @@
             this.actionOptionsGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.actionOptionsGroup.GlowBorder = false;
             this.actionOptionsGroup.HeaderText = "Action Options";
-            this.actionOptionsGroup.Location = new System.Drawing.Point(60, 270);
+            this.actionOptionsGroup.Location = new System.Drawing.Point(437, 19);
             this.actionOptionsGroup.Name = "actionOptionsGroup";
             this.actionOptionsGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.actionOptionsGroup.ScanLines = false;
-            this.actionOptionsGroup.Size = new System.Drawing.Size(400, 100);
+            this.actionOptionsGroup.Size = new System.Drawing.Size(364, 150);
             this.actionOptionsGroup.TabIndex = 2;
             // 
             // moveRomsRadio
@@ -485,15 +485,14 @@
             // 
             this.outputDirectoryGroup.Controls.Add(this.outputDirectoryLabel);
             this.outputDirectoryGroup.Controls.Add(this.outputDirectoryTextBox);
-            this.outputDirectoryGroup.Controls.Add(this.outputBrowseButton);
             this.outputDirectoryGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.outputDirectoryGroup.GlowBorder = false;
             this.outputDirectoryGroup.HeaderText = "";
-            this.outputDirectoryGroup.Location = new System.Drawing.Point(60, 390);
+            this.outputDirectoryGroup.Location = new System.Drawing.Point(20, 194);
             this.outputDirectoryGroup.Name = "outputDirectoryGroup";
             this.outputDirectoryGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.outputDirectoryGroup.ScanLines = false;
-            this.outputDirectoryGroup.Size = new System.Drawing.Size(1200, 80);
+            this.outputDirectoryGroup.Size = new System.Drawing.Size(781, 80);
             this.outputDirectoryGroup.TabIndex = 3;
             // 
             // outputDirectoryLabel
@@ -517,7 +516,7 @@
             this.outputDirectoryTextBox.Location = new System.Drawing.Point(160, 30);
             this.outputDirectoryTextBox.Name = "outputDirectoryTextBox";
             this.outputDirectoryTextBox.ReadOnly = true;
-            this.outputDirectoryTextBox.Size = new System.Drawing.Size(800, 30);
+            this.outputDirectoryTextBox.Size = new System.Drawing.Size(475, 30);
             this.outputDirectoryTextBox.TabIndex = 1;
             this.outputDirectoryTextBox.Text = "Choose a folder for organized ROMs...";
             // 
@@ -530,12 +529,13 @@
             this.outputBrowseButton.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.outputBrowseButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.outputBrowseButton.Glowing = false;
-            this.outputBrowseButton.Location = new System.Drawing.Point(980, 30);
+            this.outputBrowseButton.Location = new System.Drawing.Point(677, 224);
             this.outputBrowseButton.Name = "outputBrowseButton";
             this.outputBrowseButton.Size = new System.Drawing.Size(100, 30);
             this.outputBrowseButton.TabIndex = 2;
             this.outputBrowseButton.Text = "Browse";
             this.outputBrowseButton.TextColor = System.Drawing.Color.White;
+            this.outputBrowseButton.Click += new System.EventHandler(this.outputBrowseButton_Click);
             // 
             // organizeButton
             // 
@@ -546,32 +546,32 @@
             this.organizeButton.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.organizeButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.organizeButton.Glowing = false;
-            this.organizeButton.Location = new System.Drawing.Point(60, 490);
+            this.organizeButton.Location = new System.Drawing.Point(20, 308);
             this.organizeButton.Name = "organizeButton";
             this.organizeButton.Size = new System.Drawing.Size(180, 40);
             this.organizeButton.TabIndex = 4;
             this.organizeButton.Text = "Organize ROMs";
             this.organizeButton.TextColor = System.Drawing.Color.White;
+            this.organizeButton.Click += new System.EventHandler(this.organizeButton_Click);
             // 
             // organizeOutputGroup
             // 
-            this.organizeOutputGroup.Controls.Add(this.organizeConsoleOutput);
             this.organizeOutputGroup.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.organizeOutputGroup.GlowBorder = false;
             this.organizeOutputGroup.HeaderText = "Organize Output";
-            this.organizeOutputGroup.Location = new System.Drawing.Point(60, 550);
+            this.organizeOutputGroup.Location = new System.Drawing.Point(60, 444);
             this.organizeOutputGroup.Name = "organizeOutputGroup";
             this.organizeOutputGroup.Padding = new System.Windows.Forms.Padding(10, 30, 10, 10);
             this.organizeOutputGroup.ScanLines = false;
-            this.organizeOutputGroup.Size = new System.Drawing.Size(1200, 180);
+            this.organizeOutputGroup.Size = new System.Drawing.Size(1200, 329);
             this.organizeOutputGroup.TabIndex = 5;
             // 
             // organizeConsoleOutput
             // 
             this.organizeConsoleOutput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.organizeConsoleOutput.Location = new System.Drawing.Point(20, 40);
+            this.organizeConsoleOutput.Location = new System.Drawing.Point(66, 479);
             this.organizeConsoleOutput.Name = "organizeConsoleOutput";
-            this.organizeConsoleOutput.Size = new System.Drawing.Size(1160, 120);
+            this.organizeConsoleOutput.Size = new System.Drawing.Size(1188, 284);
             this.organizeConsoleOutput.TabIndex = 0;
             this.organizeConsoleOutput.Text = "Ready to organize ROMs...";
             // 
@@ -755,7 +755,7 @@
             this.removeDuplicatesButton.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.removeDuplicatesButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.removeDuplicatesButton.Glowing = false;
-            this.removeDuplicatesButton.Location = new System.Drawing.Point(995, 300);
+            this.removeDuplicatesButton.Location = new System.Drawing.Point(995, 335);
             this.removeDuplicatesButton.Name = "removeDuplicatesButton";
             this.removeDuplicatesButton.Size = new System.Drawing.Size(170, 35);
             this.removeDuplicatesButton.TabIndex = 4;
@@ -771,7 +771,7 @@
             this.scanDuplicatesButton.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.scanDuplicatesButton.GlowColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.scanDuplicatesButton.Glowing = false;
-            this.scanDuplicatesButton.Location = new System.Drawing.Point(695, 300);
+            this.scanDuplicatesButton.Location = new System.Drawing.Point(695, 335);
             this.scanDuplicatesButton.Name = "scanDuplicatesButton";
             this.scanDuplicatesButton.Size = new System.Drawing.Size(160, 35);
             this.scanDuplicatesButton.TabIndex = 3;
@@ -932,6 +932,23 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Settings";
             // 
+            // retroGroupBox1
+            // 
+            this.retroGroupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(25)))));
+            this.retroGroupBox1.Controls.Add(this.outputBrowseButton);
+            this.retroGroupBox1.Controls.Add(this.outputDirectoryGroup);
+            this.retroGroupBox1.Controls.Add(this.organizeButton);
+            this.retroGroupBox1.Controls.Add(this.actionOptionsGroup);
+            this.retroGroupBox1.Controls.Add(this.organizationMethodGroup);
+            this.retroGroupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.retroGroupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold);
+            this.retroGroupBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.retroGroupBox1.Location = new System.Drawing.Point(60, 51);
+            this.retroGroupBox1.Name = "retroGroupBox1";
+            this.retroGroupBox1.Size = new System.Drawing.Size(1200, 369);
+            this.retroGroupBox1.TabIndex = 6;
+            this.retroGroupBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -955,7 +972,6 @@
             this.organizationMethodGroup.ResumeLayout(false);
             this.actionOptionsGroup.ResumeLayout(false);
             this.outputDirectoryGroup.ResumeLayout(false);
-            this.organizeOutputGroup.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.cleanMainPanel.ResumeLayout(false);
             this.renameGroup.ResumeLayout(false);
@@ -964,6 +980,7 @@
             this.detectionMethodGroup.ResumeLayout(false);
             this.duplicateHandlingGroup.ResumeLayout(false);
             this.cleanOutputGroup.ResumeLayout(false);
+            this.retroGroupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1035,5 +1052,6 @@
         private RetroArcadeUI.ArcadeButton removeDuplicatesButton;
         private RetroArcadeUI.ArcadeGroupBox cleanOutputGroup;
         private RetroArcadeUI.ArcadeScrollableTextBox cleanConsoleOutput;
+        private RetroForms.RetroGroupBox retroGroupBox1;
     }
 }
