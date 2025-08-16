@@ -14,14 +14,19 @@ namespace rom_organizer
         private Timer scanTimer;
         private bool isScanning = false;
         private bool isOrganizing = false;
+        private bool isCleaning = false; // Add cleaning state
         private SettingsManager settings;
         private RomOrganizer romOrganizer;
+        private RomCleaner romCleaner; // Add ROM cleaner
+        private RomDatabase database; // Add database reference
 
         public Form1()
         {
             InitializeComponent();
             settings = SettingsManager.Instance;
             romOrganizer = new RomOrganizer();
+            database = new RomDatabase(); // Initialize database
+            romCleaner = new RomCleaner(database); // Initialize ROM cleaner
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -30,6 +35,7 @@ namespace rom_organizer
             LoadUserSettings();
             InitializeUI();
             InitializeOrganizeTab();
+            InitializeCleanTab(); // Add clean tab initialization
         }
 
         private void LoadUserSettings()
@@ -164,6 +170,33 @@ namespace rom_organizer
             AppendOrganizeConsoleText("", Color.White);
         }
 
+        private void InitializeCleanTab()
+        {
+            // Initialize clean console with welcome message
+            cleanConsoleOutput.ClearText();
+            cleanConsoleOutput.AddText("🧹 ROM Cleaner Console", Color.FromArgb(255, 165, 0));
+            cleanConsoleOutput.AddText("", Color.White);
+            AppendCleanConsoleText("[SYSTEM] ROM Cleaner initialized and ready", Color.LimeGreen);
+
+            // Connect event handlers for clean tab
+            renameButton.Click += RenameButton_Click;
+            scanDuplicatesButton.Click += ScanDuplicatesButton_Click;
+            removeDuplicatesButton.Click += RemoveDuplicatesButton_Click;
+
+            // Show current settings
+            string renameSetting = removeTagsRadio.Checked ? "Remove Tags" :
+                                  standardFormatRadio.Checked ? "Standard Format" : "Custom Format";
+            string detectionMethod = fileHashRadio.Checked ? "File Hash" :
+                                   fileSizeNameRadio.Checked ? "Size + Name" : "Name Similarity";
+
+            AppendCleanConsoleText($"[SETTINGS] Rename method: {renameSetting}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[SETTINGS] Duplicate detection: {detectionMethod}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[SETTINGS] Keep best version: {keepBestVersionCheckBox.Checked}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[SETTINGS] Move duplicates: {moveDuplicatesCheckBox.Checked}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText("[INFO] Configure options and click the appropriate button to begin", Color.FromArgb(150, 150, 150));
+            AppendCleanConsoleText("", Color.White);
+        }
+
         #region Scan Tab Events (existing code)
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -275,7 +308,6 @@ namespace rom_organizer
             // Check if database has ROMs
             try
             {
-                var database = new RomDatabase();
                 var romCount = database.GetAllRoms().Count;
                 if (romCount == 0)
                 {
@@ -450,6 +482,402 @@ namespace rom_organizer
 
         #endregion
 
+        #region Clean Tab Events
+
+        private async void RenameButton_Click(object sender, EventArgs e)
+        {
+            if (isCleaning)
+            {
+                AppendCleanConsoleText("[WARNING] Cleaning operation already in progress!", Color.Orange);
+                return;
+            }
+
+            if (isScanning || isOrganizing)
+            {
+                AppendCleanConsoleText("[WARNING] Cannot clean while other operations are in progress!", Color.Orange);
+                return;
+            }
+
+            // Check if database has ROMs
+            try
+            {
+                var romCount = database.GetAllRoms().Count;
+                if (romCount == 0)
+                {
+                    AppendCleanConsoleText("[ERROR] No ROMs found in database! Please scan your ROM collection first.", Color.Red);
+                    AppendCleanConsoleText("[INFO] Go to the 'Scan ROM' tab to scan your collection.", Color.FromArgb(150, 150, 150));
+                    return;
+                }
+
+                AppendCleanConsoleText($"[INFO] Found {romCount} ROMs in database - ready to rename", Color.FromArgb(100, 200, 255));
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Database error: {ex.Message}", Color.Red);
+                return;
+            }
+
+            await StartRenameOperation();
+        }
+
+        private async void ScanDuplicatesButton_Click(object sender, EventArgs e)
+        {
+            if (isCleaning)
+            {
+                AppendCleanConsoleText("[WARNING] Cleaning operation already in progress!", Color.Orange);
+                return;
+            }
+
+            if (isScanning || isOrganizing)
+            {
+                AppendCleanConsoleText("[WARNING] Cannot scan duplicates while other operations are in progress!", Color.Orange);
+                return;
+            }
+
+            // Check if database has ROMs
+            try
+            {
+                var romCount = database.GetAllRoms().Count;
+                if (romCount == 0)
+                {
+                    AppendCleanConsoleText("[ERROR] No ROMs found in database! Please scan your ROM collection first.", Color.Red);
+                    AppendCleanConsoleText("[INFO] Go to the 'Scan ROM' tab to scan your collection.", Color.FromArgb(150, 150, 150));
+                    return;
+                }
+
+                AppendCleanConsoleText($"[INFO] Found {romCount} ROMs in database - ready to scan for duplicates", Color.FromArgb(100, 200, 255));
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Database error: {ex.Message}", Color.Red);
+                return;
+            }
+
+            await StartDuplicateScanOperation();
+        }
+
+        private async void RemoveDuplicatesButton_Click(object sender, EventArgs e)
+        {
+            if (isCleaning)
+            {
+                AppendCleanConsoleText("[WARNING] Cleaning operation already in progress!", Color.Orange);
+                return;
+            }
+
+            if (isScanning || isOrganizing)
+            {
+                AppendCleanConsoleText("[WARNING] Cannot remove duplicates while other operations are in progress!", Color.Orange);
+                return;
+            }
+
+            // Check if database has ROMs
+            try
+            {
+                var romCount = database.GetAllRoms().Count;
+                if (romCount == 0)
+                {
+                    AppendCleanConsoleText("[ERROR] No ROMs found in database! Please scan your ROM collection first.", Color.Red);
+                    AppendCleanConsoleText("[INFO] Go to the 'Scan ROM' tab to scan your collection.", Color.FromArgb(150, 150, 150));
+                    return;
+                }
+
+                AppendCleanConsoleText($"[INFO] Found {romCount} ROMs in database - ready to remove duplicates", Color.FromArgb(100, 200, 255));
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Database error: {ex.Message}", Color.Red);
+                return;
+            }
+
+            await StartDuplicateRemovalOperation();
+        }
+
+        private async Task StartRenameOperation()
+        {
+            isCleaning = true;
+
+            // Update UI
+            renameButton.Text = "Renaming...";
+            renameButton.Enabled = false;
+
+            // Clear console and show rename start
+            cleanConsoleOutput.ClearText();
+            cleanConsoleOutput.AddText("🧹 ROM Cleaner Console - Renaming", Color.FromArgb(255, 165, 0));
+            cleanConsoleOutput.AddText("", Color.White);
+
+            // Configure rename settings
+            var config = new RomCleaner.RenameConfiguration();
+
+            if (removeTagsRadio.Checked)
+                config.Convention = RomCleaner.NamingConvention.RemoveTags;
+            else if (standardFormatRadio.Checked)
+                config.Convention = RomCleaner.NamingConvention.StandardFormat;
+            else
+            {
+                config.Convention = RomCleaner.NamingConvention.CustomFormat;
+                config.CustomFormat = customFormatTextBox.Text;
+            }
+
+            AppendCleanConsoleText("[RENAME] Starting ROM rename operation...", Color.Yellow);
+            AppendCleanConsoleText($"[RENAME] Method: {config.Convention}", Color.FromArgb(100, 200, 255));
+            if (config.Convention == RomCleaner.NamingConvention.CustomFormat)
+            {
+                AppendCleanConsoleText($"[RENAME] Custom format: {config.CustomFormat}", Color.FromArgb(100, 200, 255));
+            }
+            AppendCleanConsoleText("", Color.White);
+
+            try
+            {
+                // Progress callback to update UI
+                var progress = new Progress<string>(message => {
+                    AppendCleanConsoleText($"[PROGRESS] {message}", Color.Cyan);
+                });
+
+                var result = await romCleaner.RenameRomsAsync(config, progress);
+
+                // Display results
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText($"[SUCCESS] Rename operation completed in {result.Duration.TotalSeconds:F1} seconds", Color.LimeGreen);
+                AppendCleanConsoleText("", Color.White);
+
+                AppendCleanConsoleText("[RESULTS] Rename summary:", Color.Yellow);
+                AppendCleanConsoleText($"[RESULTS] Total files processed: {result.TotalFilesProcessed}", Color.FromArgb(100, 200, 255));
+                AppendCleanConsoleText($"[RESULTS] Files renamed: {result.FilesRenamed}", Color.LimeGreen);
+                AppendCleanConsoleText($"[RESULTS] Files skipped: {result.FilesSkipped}", Color.Orange);
+
+                if (result.Errors > 0)
+                {
+                    AppendCleanConsoleText($"[RESULTS] Errors: {result.Errors}", Color.Red);
+                    AppendCleanConsoleText("", Color.White);
+                    AppendCleanConsoleText("[ERRORS] First few errors:", Color.Red);
+                    foreach (var error in result.ErrorMessages.Take(5))
+                    {
+                        AppendCleanConsoleText($"[ERROR] {error}", Color.Red);
+                    }
+                    if (result.ErrorMessages.Count > 5)
+                    {
+                        AppendCleanConsoleText($"[ERROR] ... and {result.ErrorMessages.Count - 5} more errors", Color.Red);
+                    }
+                }
+
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText("═══════════════════════════════════════", Color.Cyan);
+                AppendCleanConsoleText("[COMPLETE] ROM rename operation finished", Color.LimeGreen);
+                AppendCleanConsoleText("[READY] Ready for next operation", Color.LimeGreen);
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Unexpected error during rename: {ex.Message}", Color.Red);
+            }
+            finally
+            {
+                isCleaning = false;
+                renameButton.Text = "[R] Apply Renames";
+                renameButton.Enabled = true;
+            }
+        }
+
+        private async Task StartDuplicateScanOperation()
+        {
+            isCleaning = true;
+
+            // Update UI
+            scanDuplicatesButton.Text = "Scanning...";
+            scanDuplicatesButton.Enabled = false;
+
+            // Clear console and show scan start
+            cleanConsoleOutput.ClearText();
+            cleanConsoleOutput.AddText("🧹 ROM Cleaner Console - Scanning Duplicates", Color.FromArgb(255, 165, 0));
+            cleanConsoleOutput.AddText("", Color.White);
+
+            // Configure duplicate settings
+            var config = new RomCleaner.DuplicateConfiguration
+            {
+                PreviewOnly = true // Only scan, don't remove
+            };
+
+            if (fileHashRadio.Checked)
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.FileHash;
+            else if (fileSizeNameRadio.Checked)
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.FileSizeAndName;
+            else
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.NameSimilarity;
+
+            config.KeepBestVersion = keepBestVersionCheckBox.Checked;
+            config.MoveDuplicatesToFolder = moveDuplicatesCheckBox.Checked;
+
+            AppendCleanConsoleText("[SCAN] Starting duplicate scan operation...", Color.Yellow);
+            AppendCleanConsoleText($"[SCAN] Detection method: {config.DetectionMethod}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[SCAN] Keep best version: {config.KeepBestVersion}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText("", Color.White);
+
+            try
+            {
+                // Progress callback to update UI
+                var progress = new Progress<string>(message => {
+                    AppendCleanConsoleText($"[PROGRESS] {message}", Color.Cyan);
+                });
+
+                var result = await romCleaner.ScanForDuplicatesAsync(config, progress);
+
+                // Display results
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText($"[SUCCESS] Duplicate scan completed in {result.Duration.TotalSeconds:F1} seconds", Color.LimeGreen);
+                AppendCleanConsoleText("", Color.White);
+
+                AppendCleanConsoleText("[RESULTS] Duplicate scan summary:", Color.Yellow);
+                AppendCleanConsoleText($"[RESULTS] Total files scanned: {result.TotalFilesScanned}", Color.FromArgb(100, 200, 255));
+                AppendCleanConsoleText($"[RESULTS] Duplicate groups found: {result.DuplicateGroupsFound}", Color.Orange);
+                AppendCleanConsoleText($"[RESULTS] Duplicate files found: {result.DuplicateFilesFound}", Color.Orange);
+
+                if (result.DuplicateGroupsFound > 0)
+                {
+                    AppendCleanConsoleText("", Color.White);
+                    AppendCleanConsoleText("[DUPLICATES] Sample duplicate groups:", Color.Orange);
+                    foreach (var group in result.DuplicateGroups.Take(5))
+                    {
+                        AppendCleanConsoleText($"[GROUP] {group.Files.Count} duplicates:", Color.Orange);
+                        foreach (var file in group.Files.Take(3))
+                        {
+                            AppendCleanConsoleText($"  - {file.Name} ({romCleaner.FormatFileSize(file.Size)})", Color.FromArgb(150, 150, 150));
+                        }
+                        if (group.Files.Count > 3)
+                        {
+                            AppendCleanConsoleText($"  ... and {group.Files.Count - 3} more files", Color.FromArgb(150, 150, 150));
+                        }
+                        AppendCleanConsoleText("", Color.White);
+                    }
+
+                    if (result.DuplicateGroupsFound > 5)
+                    {
+                        AppendCleanConsoleText($"[INFO] ... and {result.DuplicateGroupsFound - 5} more duplicate groups", Color.FromArgb(150, 150, 150));
+                    }
+
+                    long potentialSpaceSaved = result.DuplicateGroups.Sum(g => g.Files.Skip(1).Sum(f => f.Size));
+                    AppendCleanConsoleText($"[INFO] Potential space to reclaim: {romCleaner.FormatFileSize(potentialSpaceSaved)}", Color.Yellow);
+                }
+                else
+                {
+                    AppendCleanConsoleText("[INFO] No duplicates found in your collection!", Color.LimeGreen);
+                }
+
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText("═══════════════════════════════════════", Color.Cyan);
+                AppendCleanConsoleText("[COMPLETE] Duplicate scan finished", Color.LimeGreen);
+                AppendCleanConsoleText("[INFO] Use 'Remove Duplicates' to clean your collection", Color.FromArgb(150, 150, 150));
+                AppendCleanConsoleText("[READY] Ready for next operation", Color.LimeGreen);
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Unexpected error during duplicate scan: {ex.Message}", Color.Red);
+            }
+            finally
+            {
+                isCleaning = false;
+                scanDuplicatesButton.Text = "[S] Scan for Duplicates";
+                scanDuplicatesButton.Enabled = true;
+            }
+        }
+
+        private async Task StartDuplicateRemovalOperation()
+        {
+            isCleaning = true;
+
+            // Update UI
+            removeDuplicatesButton.Text = "Removing...";
+            removeDuplicatesButton.Enabled = false;
+
+            // Clear console and show removal start
+            cleanConsoleOutput.ClearText();
+            cleanConsoleOutput.AddText("🧹 ROM Cleaner Console - Removing Duplicates", Color.FromArgb(255, 165, 0));
+            cleanConsoleOutput.AddText("", Color.White);
+
+            // Configure duplicate settings
+            var config = new RomCleaner.DuplicateConfiguration
+            {
+                PreviewOnly = false // Actually remove duplicates
+            };
+
+            if (fileHashRadio.Checked)
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.FileHash;
+            else if (fileSizeNameRadio.Checked)
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.FileSizeAndName;
+            else
+                config.DetectionMethod = RomCleaner.DuplicateDetectionMethod.NameSimilarity;
+
+            config.KeepBestVersion = keepBestVersionCheckBox.Checked;
+            config.MoveDuplicatesToFolder = moveDuplicatesCheckBox.Checked;
+            config.DuplicatesFolderPath = "Duplicates";
+
+            AppendCleanConsoleText("[REMOVE] Starting duplicate removal operation...", Color.Yellow);
+            AppendCleanConsoleText($"[REMOVE] Detection method: {config.DetectionMethod}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[REMOVE] Keep best version: {config.KeepBestVersion}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText($"[REMOVE] Move to folder: {config.MoveDuplicatesToFolder}", Color.FromArgb(100, 200, 255));
+            AppendCleanConsoleText("", Color.White);
+
+            try
+            {
+                // Progress callback to update UI
+                var progress = new Progress<string>(message => {
+                    AppendCleanConsoleText($"[PROGRESS] {message}", Color.Cyan);
+                });
+
+                var result = await romCleaner.RemoveDuplicatesAsync(config, progress);
+
+                // Display results
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText($"[SUCCESS] Duplicate removal completed in {result.Duration.TotalSeconds:F1} seconds", Color.LimeGreen);
+                AppendCleanConsoleText("", Color.White);
+
+                AppendCleanConsoleText("[RESULTS] Duplicate removal summary:", Color.Yellow);
+                AppendCleanConsoleText($"[RESULTS] Total files scanned: {result.TotalFilesScanned}", Color.FromArgb(100, 200, 255));
+                AppendCleanConsoleText($"[RESULTS] Duplicate groups found: {result.DuplicateGroupsFound}", Color.Orange);
+                AppendCleanConsoleText($"[RESULTS] Duplicate files found: {result.DuplicateFilesFound}", Color.Orange);
+
+                if (config.MoveDuplicatesToFolder)
+                {
+                    AppendCleanConsoleText($"[RESULTS] Files moved to Duplicates folder: {result.FilesMoved}", Color.LimeGreen);
+                }
+                else
+                {
+                    AppendCleanConsoleText($"[RESULTS] Files removed: {result.FilesRemoved}", Color.LimeGreen);
+                }
+
+                AppendCleanConsoleText($"[RESULTS] Space reclaimed: {romCleaner.FormatFileSize(result.SpaceReclaimed)}", Color.LimeGreen);
+
+                if (result.ErrorMessages.Count > 0)
+                {
+                    AppendCleanConsoleText("", Color.White);
+                    AppendCleanConsoleText("[ERRORS] Some issues occurred:", Color.Red);
+                    foreach (var error in result.ErrorMessages.Take(5))
+                    {
+                        AppendCleanConsoleText($"[ERROR] {error}", Color.Red);
+                    }
+                    if (result.ErrorMessages.Count > 5)
+                    {
+                        AppendCleanConsoleText($"[ERROR] ... and {result.ErrorMessages.Count - 5} more errors", Color.Red);
+                    }
+                }
+
+                AppendCleanConsoleText("", Color.White);
+                AppendCleanConsoleText("═══════════════════════════════════════", Color.Cyan);
+                AppendCleanConsoleText("[COMPLETE] Duplicate removal finished", Color.LimeGreen);
+                AppendCleanConsoleText("[READY] Ready for next operation", Color.LimeGreen);
+            }
+            catch (Exception ex)
+            {
+                AppendCleanConsoleText($"[ERROR] Unexpected error during duplicate removal: {ex.Message}", Color.Red);
+            }
+            finally
+            {
+                isCleaning = false;
+                removeDuplicatesButton.Text = "[X] Remove Duplicates";
+                removeDuplicatesButton.Enabled = true;
+            }
+        }
+
+        #endregion
+
         #region Existing Scan Methods (keeping existing implementation)
 
         private async Task StartDatabaseScan()
@@ -532,7 +960,6 @@ namespace rom_organizer
                     // Get and display collection statistics from database
                     try
                     {
-                        var database = new RomDatabase();
                         var consoleStats = database.GetConsoleStats();
                         var genreStats = database.GetGenreStats();
 
@@ -883,6 +1310,19 @@ namespace rom_organizer
             }
         }
 
+        private void AppendCleanConsoleText(string text, Color color)
+        {
+            // Use the clean console text box
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() => cleanConsoleOutput.AddText(text, color)));
+            }
+            else
+            {
+                cleanConsoleOutput.AddText(text, color);
+            }
+        }
+
         #endregion
 
         #region Public Methods and Properties
@@ -899,6 +1339,9 @@ namespace rom_organizer
 
         // Method to get current organizing status
         public bool IsOrganizing => isOrganizing;
+
+        // Method to get current cleaning status
+        public bool IsCleaning => isCleaning;
 
         // Public method to get the current ROM directory (for other tabs to use)
         public string GetCurrentDirectory()
